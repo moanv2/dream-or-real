@@ -8,11 +8,40 @@ import { StoryCard } from "@/components/StoryCard";
 import { mockStories } from "@/lib/mock-stories";
 import type { StoryAnswer } from "@/types/story";
 
+type AnswerReview = {
+  storyId: number;
+  title: string;
+  userAnswer: StoryAnswer;
+  correctAnswer: StoryAnswer;
+  isCorrect: boolean;
+};
+
+function getPerformanceMessage(percentageCorrect: number) {
+  if (percentageCorrect >= 90) {
+    return "You have unnervingly strong dream instincts.";
+  }
+
+  if (percentageCorrect >= 75) {
+    return "Strong read. You caught most of the weirdness correctly.";
+  }
+
+  if (percentageCorrect >= 50) {
+    return "Respectable. Reality and dreams kept you guessing.";
+  }
+
+  if (percentageCorrect >= 25) {
+    return "The stories won this round, but a few calls were sharp.";
+  }
+
+  return "Brutal round. The subconscious absolutely cooked you.";
+}
+
 export default function HomePage() {
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<StoryAnswer | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
   const [score, setScore] = useState(0);
+  const [answerHistory, setAnswerHistory] = useState<AnswerReview[]>([]);
 
   const totalStories = mockStories.length;
   const currentStory = mockStories[currentStoryIndex];
@@ -26,15 +55,32 @@ export default function HomePage() {
     return Math.round((score / totalStories) * 100);
   }, [score, totalStories]);
 
+  const performanceMessage = useMemo(
+    () => getPerformanceMessage(percentageCorrect),
+    [percentageCorrect],
+  );
+
   function handleGuess(answer: StoryAnswer) {
     if (isRevealed || isCompleted) {
       return;
     }
 
+    const isCorrect = answer === currentStory.answer;
+
     setSelectedAnswer(answer);
     setIsRevealed(true);
+    setAnswerHistory((history) => [
+      ...history,
+      {
+        storyId: currentStory.id,
+        title: currentStory.title,
+        userAnswer: answer,
+        correctAnswer: currentStory.answer,
+        isCorrect,
+      },
+    ]);
 
-    if (answer === currentStory.answer) {
+    if (isCorrect) {
       setScore((currentScore) => currentScore + 1);
     }
   }
@@ -54,6 +100,7 @@ export default function HomePage() {
     setSelectedAnswer(null);
     setIsRevealed(false);
     setScore(0);
+    setAnswerHistory([]);
   }
 
   return (
@@ -85,36 +132,45 @@ export default function HomePage() {
 
         {isCompleted ? (
           <section className="overflow-hidden rounded-4xl border border-white/80 bg-paper/95 shadow-card">
-            <div className="grid min-h-[640px] lg:grid-cols-[1.05fr_0.95fr]">
-              <div className="flex flex-col justify-between p-9 lg:p-11">
-                <div>
-                  <span className="rounded-full bg-accentSoft px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-warning">
-                    Finished
-                  </span>
-                  <h2 className="mt-5 text-[2.6rem] font-semibold leading-[1] tracking-[-0.05em] md:text-[3.25rem]">
-                    Game over.
-                  </h2>
-                  <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">
-                    You made it through all {totalStories} stories. Restart to play the same set again or swap in new mock data later.
-                  </p>
-                </div>
+            <div className="grid lg:grid-cols-[0.92fr_1.08fr]">
+              <div className="border-b border-slate-200 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.98),_transparent_42%),linear-gradient(180deg,_#f7fbff_0%,_#eef4f8_100%)] p-9 lg:border-b-0 lg:border-r lg:p-11">
+                <span className="rounded-full bg-accentSoft px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-warning">
+                  Results
+                </span>
+                <h2 className="mt-5 text-[2.8rem] font-semibold leading-[0.96] tracking-[-0.05em] text-ink md:text-[3.6rem]">
+                  Final score: {score}/{totalStories}
+                </h2>
+                <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">
+                  {performanceMessage}
+                </p>
 
-                <div className="mt-10 grid gap-4 md:grid-cols-2">
+                <div className="mt-8 grid gap-4 sm:grid-cols-2">
                   <div className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-slate-200/90">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                      Final Score
+                      Accuracy
                     </p>
-                    <p className="mt-3 text-4xl font-semibold tracking-[-0.04em] text-ink">
-                      {score} / {totalStories}
+                    <p className="mt-3 text-5xl font-semibold tracking-[-0.05em] text-ink">
+                      {percentageCorrect}%
                     </p>
                   </div>
                   <div className="rounded-[1.75rem] bg-ink p-6 text-white shadow-sm">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/60">
-                      Accuracy
+                      Correct Picks
                     </p>
-                    <p className="mt-3 text-4xl font-semibold tracking-[-0.04em]">
-                      {percentageCorrect}%
+                    <p className="mt-3 text-5xl font-semibold tracking-[-0.05em]">
+                      {score}
                     </p>
+                  </div>
+                </div>
+
+                <div className="mt-8 grid gap-3 text-sm text-slate-600">
+                  <div className="flex items-center justify-between rounded-2xl bg-white/85 px-4 py-3 ring-1 ring-slate-200/80">
+                    <span>Stories played</span>
+                    <span className="font-semibold text-ink">{totalStories}</span>
+                  </div>
+                  <div className="flex items-center justify-between rounded-2xl bg-white/85 px-4 py-3 ring-1 ring-slate-200/80">
+                    <span>Misses</span>
+                    <span className="font-semibold text-ink">{totalStories - score}</span>
                   </div>
                 </div>
 
@@ -122,32 +178,62 @@ export default function HomePage() {
                   <button
                     type="button"
                     onClick={handleRestart}
-                    className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#ff7c49] hover:shadow-md active:translate-y-0"
+                    className="rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#ff7c49] hover:shadow-md active:translate-y-0"
                   >
-                    Restart Game
+                    Play Again
                   </button>
                 </div>
               </div>
 
-              <div className="flex items-center justify-center border-t border-slate-200 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.94),_transparent_48%),linear-gradient(180deg,_#dbe6f2_0%,_#edf3f8_100%)] p-10 lg:border-l lg:border-t-0">
-                <div className="w-full max-w-md rounded-[2rem] border border-white/80 bg-white/82 p-8 shadow-lg backdrop-blur">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                    Session Summary
-                  </p>
-                  <div className="mt-6 space-y-4 text-slate-600">
-                    <div className="flex items-center justify-between rounded-2xl bg-slate-100/90 px-4 py-3">
-                      <span>Correct guesses</span>
-                      <span className="font-semibold text-ink">{score}</span>
-                    </div>
-                    <div className="flex items-center justify-between rounded-2xl bg-slate-100/90 px-4 py-3">
-                      <span>Incorrect guesses</span>
-                      <span className="font-semibold text-ink">{totalStories - score}</span>
-                    </div>
-                    <div className="flex items-center justify-between rounded-2xl bg-slate-100/90 px-4 py-3">
-                      <span>Stories played</span>
-                      <span className="font-semibold text-ink">{totalStories}</span>
-                    </div>
+              <div className="p-9 lg:p-11">
+                <div className="mb-6 flex items-end justify-between gap-4">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                      Round Review
+                    </p>
+                    <h3 className="mt-2 text-[2rem] font-semibold tracking-[-0.04em] text-ink">
+                      How each guess landed
+                    </h3>
                   </div>
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                    {answerHistory.length} stories
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  {answerHistory.map((item) => (
+                    <div
+                      key={item.storyId}
+                      className="rounded-[1.5rem] border border-slate-200/90 bg-white/85 px-5 py-4 shadow-sm backdrop-blur"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0">
+                          <p className="truncate text-lg font-semibold tracking-tight text-ink">
+                            {item.title}
+                          </p>
+                          <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                            <span className="rounded-full bg-slate-100 px-2.5 py-1">
+                              You: {item.userAnswer}
+                            </span>
+                            <span className="rounded-full bg-slate-100 px-2.5 py-1">
+                              Answer: {item.correctAnswer}
+                            </span>
+                          </div>
+                        </div>
+
+                        <span
+                          className={[
+                            "shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em]",
+                            item.isCorrect
+                              ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
+                              : "bg-rose-50 text-rose-700 ring-1 ring-rose-200",
+                          ].join(" ")}
+                        >
+                          {item.isCorrect ? "Correct" : "Miss"}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
