@@ -1,0 +1,16 @@
+<svg width="1200" height="960" viewBox="0 0 1200 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="960" rx="48" fill="#CFE1F7"/>
+  <rect x="120" y="180" width="960" height="560" rx="40" fill="#1F2D45"/>
+  <rect x="200" y="260" width="320" height="220" rx="24" fill="#F7FBFF"/>
+  <rect x="560" y="260" width="320" height="220" rx="24" fill="#F7FBFF"/>
+  <rect x="300" y="560" width="600" height="60" rx="30" fill="#FF8A5B"/>
+  <circle cx="760" cy="650" r="120" fill="#FFDFC5"/>
+  <circle cx="760" cy="650" r="88" fill="#F7FBFF"/>
+  <ellipse cx="760" cy="650" rx="50" ry="34" fill="#FFCC4D"/>
+  <circle cx="790" cy="640" r="6" fill="#1F2D45"/>
+  <path d="M706 650C733 626 787 626 814 650C787 674 733 674 706 650Z" fill="#FFB11A"/>
+  <rect x="420" y="500" width="120" height="180" rx="60" fill="#3B567E"/>
+  <circle cx="480" cy="430" r="54" fill="#FFD8CA"/>
+  <path d="M438 418C468 396 498 396 522 418V474H438V418Z" fill="#253650"/>
+  <path d="M458 650C472 606 490 584 524 560" stroke="#FFD8CA" stroke-width="18" stroke-linecap="round"/>
+</svg>
