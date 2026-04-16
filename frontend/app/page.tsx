@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { GuessButtons } from "@/components/GuessButtons";
 import { ProgressBar } from "@/components/ProgressBar";
@@ -108,7 +109,7 @@ export default function HomePage() {
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-6xl flex-col justify-center">
         <div className="mb-7 flex items-end justify-between gap-6">
           <div className="max-w-[44rem]">
-            <p className="mb-4 inline-flex rounded-full border border-white/70 bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500 shadow-sm backdrop-blur">
+            <p className="mb-4 inline-flex rounded-full border border-white/70 bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500 shadow-sm backdrop-blur transition-transform duration-300 hover:-translate-y-0.5">
               Dream or Real
             </p>
             <h1 className="max-w-3xl text-[2.8rem] font-semibold leading-[0.98] tracking-[-0.05em] text-ink md:text-[3.7rem]">
@@ -117,12 +118,21 @@ export default function HomePage() {
             <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 md:text-lg">
               Read the story, trust your instincts, then see what really happened.
             </p>
+            <div className="mt-6 flex items-center gap-3">
+              <Link
+                href="/leaderboard"
+                className="rounded-full border border-slate-200 bg-white/88 px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:text-ink hover:shadow-md active:translate-y-0"
+              >
+                View Leaderboard
+              </Link>
+              <span className="text-sm text-slate-500">mock standings for the demo</span>
+            </div>
           </div>
 
           <ScoreBadge score={score} total={totalStories} />
         </div>
 
-        <div className="mb-7 rounded-[1.75rem] border border-white/70 bg-white/80 p-4 shadow-sm backdrop-blur">
+        <div className="mb-7 rounded-[1.75rem] border border-white/70 bg-white/80 p-4 shadow-sm backdrop-blur transition-shadow duration-300 hover:shadow-md">
           <ProgressBar
             current={isCompleted ? totalStories : currentStoryIndex + 1}
             total={totalStories}
@@ -131,21 +141,21 @@ export default function HomePage() {
         </div>
 
         {isCompleted ? (
-          <section className="overflow-hidden rounded-4xl border border-white/80 bg-paper/95 shadow-card">
+          <section className="motion-card-enter overflow-hidden rounded-4xl border border-white/80 bg-paper/95 shadow-card">
             <div className="grid lg:grid-cols-[0.92fr_1.08fr]">
               <div className="border-b border-slate-200 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.98),_transparent_42%),linear-gradient(180deg,_#f7fbff_0%,_#eef4f8_100%)] p-9 lg:border-b-0 lg:border-r lg:p-11">
-                <span className="rounded-full bg-accentSoft px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-warning">
+                <span className="motion-panel-enter rounded-full bg-accentSoft px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-warning">
                   Results
                 </span>
                 <h2 className="mt-5 text-[2.8rem] font-semibold leading-[0.96] tracking-[-0.05em] text-ink md:text-[3.6rem]">
                   Final score: {score}/{totalStories}
                 </h2>
-                <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">
+                <p className="motion-panel-enter mt-5 max-w-xl text-lg leading-8 text-slate-600">
                   {performanceMessage}
                 </p>
 
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-slate-200/90">
+                  <div className="motion-panel-enter rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-slate-200/90 transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
                       Accuracy
                     </p>
@@ -153,7 +163,7 @@ export default function HomePage() {
                       {percentageCorrect}%
                     </p>
                   </div>
-                  <div className="rounded-[1.75rem] bg-ink p-6 text-white shadow-sm">
+                  <div className="motion-panel-enter rounded-[1.75rem] bg-ink p-6 text-white shadow-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/60">
                       Correct Picks
                     </p>
@@ -164,24 +174,30 @@ export default function HomePage() {
                 </div>
 
                 <div className="mt-8 grid gap-3 text-sm text-slate-600">
-                  <div className="flex items-center justify-between rounded-2xl bg-white/85 px-4 py-3 ring-1 ring-slate-200/80">
+                  <div className="motion-panel-enter flex items-center justify-between rounded-2xl bg-white/85 px-4 py-3 ring-1 ring-slate-200/80 transition-transform duration-300 hover:-translate-y-0.5">
                     <span>Stories played</span>
                     <span className="font-semibold text-ink">{totalStories}</span>
                   </div>
-                  <div className="flex items-center justify-between rounded-2xl bg-white/85 px-4 py-3 ring-1 ring-slate-200/80">
+                  <div className="motion-panel-enter flex items-center justify-between rounded-2xl bg-white/85 px-4 py-3 ring-1 ring-slate-200/80 transition-transform duration-300 hover:-translate-y-0.5">
                     <span>Misses</span>
                     <span className="font-semibold text-ink">{totalStories - score}</span>
                   </div>
                 </div>
 
-                <div className="mt-8 border-t border-slate-200 pt-6">
+                <div className="mt-8 flex items-center gap-3 border-t border-slate-200 pt-6">
                   <button
                     type="button"
                     onClick={handleRestart}
-                    className="rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#ff7c49] hover:shadow-md active:translate-y-0"
+                    className="rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#ff7c49] hover:shadow-md active:translate-y-0 active:scale-[0.99]"
                   >
                     Play Again
                   </button>
+                  <Link
+                    href="/leaderboard"
+                    className="rounded-full border border-slate-200 bg-white/90 px-5 py-3 text-sm font-semibold text-slate-600 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:text-ink hover:shadow-md active:translate-y-0"
+                  >
+                    View Leaderboard
+                  </Link>
                 </div>
               </div>
 
@@ -195,16 +211,17 @@ export default function HomePage() {
                       How each guess landed
                     </h3>
                   </div>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 transition-transform duration-300 hover:-translate-y-0.5">
                     {answerHistory.length} stories
                   </span>
                 </div>
 
                 <div className="space-y-3">
-                  {answerHistory.map((item) => (
+                  {answerHistory.map((item, index) => (
                     <div
                       key={item.storyId}
-                      className="rounded-[1.5rem] border border-slate-200/90 bg-white/85 px-5 py-4 shadow-sm backdrop-blur"
+                      className="motion-list-enter rounded-[1.5rem] border border-slate-200/90 bg-white/85 px-5 py-4 shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+                      style={{ animationDelay: `${index * 32}ms` }}
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0">
@@ -212,10 +229,10 @@ export default function HomePage() {
                             {item.title}
                           </p>
                           <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
-                            <span className="rounded-full bg-slate-100 px-2.5 py-1">
+                            <span className="rounded-full bg-slate-100 px-2.5 py-1 transition-colors duration-300 hover:bg-slate-200/80">
                               You: {item.userAnswer}
                             </span>
-                            <span className="rounded-full bg-slate-100 px-2.5 py-1">
+                            <span className="rounded-full bg-slate-100 px-2.5 py-1 transition-colors duration-300 hover:bg-slate-200/80">
                               Answer: {item.correctAnswer}
                             </span>
                           </div>
@@ -223,7 +240,7 @@ export default function HomePage() {
 
                         <span
                           className={[
-                            "shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em]",
+                            "shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] transition-transform duration-300 hover:-translate-y-0.5",
                             item.isCorrect
                               ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
                               : "bg-rose-50 text-rose-700 ring-1 ring-rose-200",
@@ -239,7 +256,7 @@ export default function HomePage() {
             </div>
           </section>
         ) : (
-          <StoryCard story={currentStory}>
+          <StoryCard key={currentStory.id} story={currentStory}>
             <div className="mt-10 space-y-6">
               <GuessButtons
                 disabled={isRevealed}
@@ -251,7 +268,7 @@ export default function HomePage() {
               {isRevealed ? (
                 <section
                   className={[
-                    "rounded-[1.8rem] border p-6 shadow-lg transition-all duration-300",
+                    "motion-panel-enter rounded-[1.8rem] border p-6 shadow-lg transition-all duration-300",
                     selectedAnswer === currentStory.answer
                       ? "border-emerald-200 bg-[linear-gradient(180deg,#173c33_0%,#112f28_100%)] text-white"
                       : "border-rose-200 bg-[linear-gradient(180deg,#4b2026_0%,#31161a_100%)] text-white",
@@ -261,7 +278,7 @@ export default function HomePage() {
                     <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/60">
                       {selectedAnswer === currentStory.answer ? "Correct" : "Incorrect"}
                     </p>
-                    <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/80">
+                    <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/80 transition-all duration-300 hover:bg-white/15">
                       Answer: {currentStory.answer}
                     </span>
                   </div>
@@ -280,8 +297,13 @@ export default function HomePage() {
                 </section>
               ) : null}
 
-              <div className="flex items-center justify-between gap-4 border-t border-slate-200/90 pt-5">
-                <p className="text-sm leading-6 text-slate-500">
+              <div
+                className={[
+                  "flex items-center justify-between gap-4 border-t border-slate-200/90 pt-5 transition-all duration-300",
+                  isRevealed ? "motion-panel-enter" : "",
+                ].join(" ")}
+              >
+                <p className="text-sm leading-6 text-slate-500 transition-colors duration-300">
                   {isRevealed
                     ? "Locked in. Move to the next story when you are ready."
                     : "Pick one answer to reveal the result immediately."}
@@ -290,9 +312,9 @@ export default function HomePage() {
                   type="button"
                   onClick={handleNextStory}
                   className={[
-                    "rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-300",
+                    "rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-300 ease-out",
                     isRevealed
-                      ? "bg-accent text-white shadow-sm hover:-translate-y-0.5 hover:bg-[#ff7c49] hover:shadow-md active:translate-y-0"
+                      ? "bg-accent text-white shadow-sm hover:-translate-y-0.5 hover:bg-[#ff7c49] hover:shadow-md active:translate-y-0 active:scale-[0.99]"
                       : "border border-slate-200 bg-slate-100 text-slate-400",
                   ].join(" ")}
                   disabled={!isRevealed}
