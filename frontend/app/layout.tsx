@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import { AppShellNav } from "@/components/AppShellNav";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -7,13 +9,18 @@ export const metadata: Metadata = {
 };
 
 type RootLayoutProps = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <div className="min-h-screen">
+          <AppShellNav />
+          <div className="pb-8">{children}</div>
+        </div>
+      </body>
     </html>
   );
 }
