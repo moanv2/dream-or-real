@@ -36,13 +36,13 @@ export function CommunityActions({
   }
 
   return (
-    <div className="rounded-[1.5rem] border border-slate-200/90 bg-white/70 p-4 shadow-sm backdrop-blur transition-all duration-300">
+    <div className="panel-soft rounded-[1.5rem] p-4 transition-all duration-300">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+          <p className="meta-label">
             Community Feedback
           </p>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1.5 text-sm leading-6 text-slate-500">
             Quick signals for story quality and moderation.
           </p>
         </div>
@@ -59,10 +59,10 @@ export function CommunityActions({
           type="button"
           onClick={() => handleVote("upvote")}
           className={[
-            "rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-300",
+            "button-subtle",
             vote === "upvote"
               ? "border-emerald-300 bg-emerald-50 text-emerald-700 shadow-sm"
-              : "border-slate-200 bg-white text-slate-600 hover:-translate-y-0.5 hover:border-slate-300 hover:text-ink hover:shadow-sm",
+              : "",
           ].join(" ")}
           aria-pressed={vote === "upvote"}
         >
@@ -73,10 +73,10 @@ export function CommunityActions({
           type="button"
           onClick={() => handleVote("downvote")}
           className={[
-            "rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-300",
+            "button-subtle",
             vote === "downvote"
               ? "border-rose-300 bg-rose-50 text-rose-700 shadow-sm"
-              : "border-slate-200 bg-white text-slate-600 hover:-translate-y-0.5 hover:border-slate-300 hover:text-ink hover:shadow-sm",
+              : "",
           ].join(" ")}
           aria-pressed={vote === "downvote"}
         >
@@ -87,10 +87,10 @@ export function CommunityActions({
           type="button"
           onClick={() => setIsReportOpen((open) => !open)}
           className={[
-            "rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-300",
+            "button-subtle",
             isReportOpen || reportedReason
               ? "border-amber-300 bg-amber-50 text-amber-700 shadow-sm"
-              : "border-slate-200 bg-white text-slate-600 hover:-translate-y-0.5 hover:border-slate-300 hover:text-ink hover:shadow-sm",
+              : "",
           ].join(" ")}
           aria-expanded={isReportOpen}
         >
@@ -99,7 +99,7 @@ export function CommunityActions({
       </div>
 
       {reportedReason ? (
-        <div className="motion-panel-enter mt-4 rounded-[1.25rem] bg-slate-50 px-4 py-3 text-sm text-slate-600 ring-1 ring-slate-200/80">
+        <div className="motion-panel-enter mt-4 rounded-[1.25rem] bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-600 ring-1 ring-slate-200/80">
           Thanks. This story was marked as{" "}
           <span className="font-semibold text-ink">{reportedReason}</span> in
           the demo UI.
@@ -107,8 +107,8 @@ export function CommunityActions({
       ) : null}
 
       {isReportOpen && !reportedReason ? (
-        <div className="motion-panel-enter mt-4 rounded-[1.4rem] border border-slate-200 bg-slate-50/85 p-4 shadow-sm">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+        <div className="panel-muted motion-panel-enter mt-4 p-4">
+          <p className="meta-label">
             Report Reason
           </p>
 
@@ -122,7 +122,7 @@ export function CommunityActions({
                   type="button"
                   onClick={() => setSelectedReason(reason)}
                   className={[
-                    "rounded-full border px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] transition-all duration-300",
+                    "rounded-full border px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2",
                     isSelected
                       ? "border-ink bg-ink text-white shadow-sm"
                       : "border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-ink",
@@ -138,14 +138,14 @@ export function CommunityActions({
             <button
               type="button"
               onClick={handleReportSubmit}
-              className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0"
+              className="button-base bg-ink px-4 py-2 text-white shadow-sm hover:-translate-y-0.5 hover:shadow-md active:translate-y-0"
             >
               Send Report
             </button>
             <button
               type="button"
               onClick={() => setIsReportOpen(false)}
-              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-500 transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:text-ink hover:shadow-sm active:translate-y-0"
+              className="button-subtle"
             >
               Cancel
             </button>

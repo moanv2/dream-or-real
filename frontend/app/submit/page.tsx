@@ -49,16 +49,16 @@ export default function SubmitPage() {
   }
 
   return (
-    <main className="min-h-screen bg-mist px-6 py-10 text-ink lg:px-8 lg:py-12">
-      <div className="mx-auto max-w-6xl">
+    <main className="app-page">
+      <div className="app-frame">
         <div className="mb-7 max-w-[46rem]">
-          <p className="mb-4 inline-flex rounded-full border border-white/70 bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500 shadow-sm backdrop-blur transition-transform duration-300 hover:-translate-y-0.5">
+          <p className="section-kicker mb-4 transition-transform duration-300 hover:-translate-y-0.5">
             Submit
           </p>
-          <h1 className="max-w-3xl text-[2.8rem] font-semibold leading-[0.98] tracking-[-0.05em] text-ink md:text-[3.7rem]">
+          <h1 className="section-title">
             Send in your strangest story.
           </h1>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 md:text-lg">
+          <p className="section-copy">
             This is a mocked frontend-only flow for the demo. Fill out the
             story, choose the answer label, and preview the kind of submission
             experience the product could grow into later.
@@ -66,7 +66,7 @@ export default function SubmitPage() {
         </div>
 
         {isSubmitted ? (
-          <section className="motion-card-enter overflow-hidden rounded-4xl border border-white/80 bg-paper/95 shadow-card backdrop-blur">
+          <section className="motion-card-enter surface-card overflow-hidden">
             <div className="grid lg:grid-cols-[0.92fr_1.08fr]">
               <div className="border-b border-slate-200 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.98),_transparent_42%),linear-gradient(180deg,_#f7fbff_0%,_#eef4f8_100%)] p-9 lg:border-b-0 lg:border-r lg:p-11">
                 <span className="motion-panel-enter rounded-full bg-accentSoft px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-warning">
@@ -82,8 +82,8 @@ export default function SubmitPage() {
                 </p>
 
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                  <div className="motion-panel-enter rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-slate-200/90 transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                  <div className="motion-panel-enter panel-soft border-0 bg-white p-6 transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                    <p className="meta-label">
                       Submitted As
                     </p>
                     <p className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-ink">
@@ -104,22 +104,19 @@ export default function SubmitPage() {
                   <button
                     type="button"
                     onClick={handleNewSubmission}
-                    className="rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#ff7c49] hover:shadow-md active:translate-y-0"
+                    className="button-primary"
                   >
                     Submit Another
                   </button>
-                  <Link
-                    href="/"
-                    className="rounded-full border border-slate-200 bg-white/90 px-5 py-3 text-sm font-semibold text-slate-600 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:text-ink hover:shadow-md active:translate-y-0"
-                  >
+                  <Link href="/" className="button-secondary">
                     Back to Play
                   </Link>
                 </div>
               </div>
 
               <div className="p-9 lg:p-11">
-                <div className="rounded-[1.9rem] border border-slate-200/90 bg-white/88 p-7 shadow-sm backdrop-blur">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                <div className="panel-soft rounded-[1.9rem] p-7">
+                  <p className="meta-label">
                     Submission Preview
                   </p>
                   <div className="mt-5 space-y-5">
@@ -128,7 +125,7 @@ export default function SubmitPage() {
                         Title
                       </p>
                       <p className="mt-2 text-xl font-semibold tracking-tight text-ink">
-                        {form.title}
+                        {form.title || "Untitled story"}
                       </p>
                     </div>
                     <div>
@@ -136,14 +133,15 @@ export default function SubmitPage() {
                         Story Text
                       </p>
                       <p className="mt-2 text-base leading-7 text-slate-600">
-                        {form.storyText}
+                        {form.storyText ||
+                          "The story text preview will appear here after submission."}
                       </p>
                     </div>
                     <div className="flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
-                      <span className="rounded-full bg-slate-100 px-3 py-1">
+                      <span className="chip-soft">
                         Answer: {form.answer}
                       </span>
-                      <span className="rounded-full bg-slate-100 px-3 py-1">
+                      <span className="chip-soft">
                         {form.imageName || "Image optional"}
                       </span>
                     </div>
@@ -153,7 +151,7 @@ export default function SubmitPage() {
             </div>
           </section>
         ) : (
-          <section className="motion-card-enter overflow-hidden rounded-4xl border border-white/80 bg-paper/95 shadow-card backdrop-blur">
+          <section className="motion-card-enter surface-card overflow-hidden">
             <div className="grid lg:grid-cols-[0.94fr_1.06fr]">
               <div className="border-b border-slate-200 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.98),_transparent_42%),linear-gradient(180deg,_#f7fbff_0%,_#eef4f8_100%)] p-9 lg:border-b-0 lg:border-r lg:p-11">
                 <span className="motion-panel-enter rounded-full bg-accentSoft px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-warning">
@@ -183,10 +181,7 @@ export default function SubmitPage() {
               <div className="p-9 lg:p-11">
                 <form className="space-y-6" onSubmit={handleSubmit}>
                   <div>
-                    <label
-                      htmlFor="story-title"
-                      className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500"
-                    >
+                    <label htmlFor="story-title" className="meta-label">
                       Story Title
                     </label>
                     <input
@@ -197,16 +192,13 @@ export default function SubmitPage() {
                         handleChange("title", event.target.value)
                       }
                       placeholder="The Bird Outside Room 214"
-                      className="mt-3 w-full rounded-[1.35rem] border border-slate-200 bg-white px-4 py-3.5 text-base text-ink shadow-sm outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-slate-300 focus:shadow-md"
+                      className="field-input mt-3"
                       required
                     />
                   </div>
 
                   <div>
-                    <label
-                      htmlFor="story-text"
-                      className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500"
-                    >
+                    <label htmlFor="story-text" className="meta-label">
                       Story Text
                     </label>
                     <textarea
@@ -216,14 +208,14 @@ export default function SubmitPage() {
                         handleChange("storyText", event.target.value)
                       }
                       placeholder="Write the short bizarre story exactly how you want players to read it."
-                      className="mt-3 min-h-[220px] w-full rounded-[1.35rem] border border-slate-200 bg-white px-4 py-3.5 text-base leading-7 text-ink shadow-sm outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-slate-300 focus:shadow-md"
+                      className="field-input mt-3 min-h-[220px] leading-7"
                       required
                     />
                   </div>
 
                   <div className="grid gap-6 md:grid-cols-[1fr_1fr]">
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                      <p className="meta-label">
                         Answer Label
                       </p>
                       <div className="mt-3 grid grid-cols-2 gap-3">
@@ -236,7 +228,7 @@ export default function SubmitPage() {
                               type="button"
                               onClick={() => handleChange("answer", option)}
                               className={[
-                                "rounded-[1.25rem] border px-4 py-3 text-sm font-semibold uppercase tracking-[0.16em] transition-all duration-300",
+                                "rounded-[1.25rem] border px-4 py-3 text-sm font-semibold uppercase tracking-[0.16em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2",
                                 isActive
                                   ? "border-ink bg-ink text-white shadow-sm"
                                   : "border-slate-200 bg-white text-slate-600 hover:-translate-y-0.5 hover:border-slate-300 hover:text-ink hover:shadow-sm",
@@ -250,7 +242,7 @@ export default function SubmitPage() {
                     </div>
 
                     <div>
-                      <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                      <label className="meta-label">
                         Optional Image
                       </label>
                       <label
@@ -289,7 +281,7 @@ export default function SubmitPage() {
                     </p>
                     <button
                       type="submit"
-                      className="rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#ff7c49] hover:shadow-md active:translate-y-0"
+                      className="button-primary"
                     >
                       Submit Story
                     </button>

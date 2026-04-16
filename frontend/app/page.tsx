@@ -73,10 +73,12 @@ export default function HomePage() {
     () => getPerformanceMessage(percentageCorrect),
     [percentageCorrect],
   );
-  const currentStoryFeedback = storyFeedback[currentStory.id] ?? { vote: null };
+  const currentStoryFeedback = currentStory
+    ? storyFeedback[currentStory.id] ?? { vote: null }
+    : { vote: null };
 
   function handleGuess(answer: StoryAnswer) {
-    if (isRevealed || isCompleted) {
+    if (isRevealed || isCompleted || !currentStory) {
       return;
     }
 
@@ -120,6 +122,10 @@ export default function HomePage() {
   }
 
   function handleVoteChange(vote: VoteValue) {
+    if (!currentStory) {
+      return;
+    }
+
     setStoryFeedback((current) => ({
       ...current,
       [currentStory.id]: {
@@ -130,6 +136,10 @@ export default function HomePage() {
   }
 
   function handleReport(reason: ReportReason) {
+    if (!currentStory) {
+      return;
+    }
+
     setStoryFeedback((current) => ({
       ...current,
       [currentStory.id]: {
@@ -141,43 +151,85 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen bg-mist px-6 py-10 text-ink lg:px-8 lg:py-12">
-      <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-6xl flex-col justify-center">
+    <main className="app-page">
+      <div className="app-frame flex min-h-[calc(100vh-5rem)] flex-col justify-center">
         <div className="mb-7 flex items-end justify-between gap-6">
           <div className="max-w-[44rem]">
-            <p className="mb-4 inline-flex rounded-full border border-white/70 bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500 shadow-sm backdrop-blur transition-transform duration-300 hover:-translate-y-0.5">
+            <p className="section-kicker mb-4 transition-transform duration-300 hover:-translate-y-0.5">
               Dream or Real
             </p>
-            <h1 className="max-w-3xl text-[2.8rem] font-semibold leading-[0.98] tracking-[-0.05em] text-ink md:text-[3.7rem]">
+            <h1 className="section-title">
               One weird story. One quick guess.
             </h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 md:text-lg">
+            <p className="section-copy">
               Read the story, trust your instincts, then see what really happened.
             </p>
             <div className="mt-6 flex items-center gap-3">
               <Link
                 href="/leaderboard"
-                className="rounded-full border border-slate-200 bg-white/88 px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:text-ink hover:shadow-md active:translate-y-0"
+                className="button-secondary px-4 py-2.5"
               >
                 View Leaderboard
               </Link>
-              <span className="text-sm text-slate-500">mock standings for the demo</span>
+              <span className="text-sm leading-6 text-slate-500">mock standings for the demo</span>
             </div>
           </div>
 
           <ScoreBadge score={score} total={totalStories} />
         </div>
 
-        <div className="mb-7 rounded-[1.75rem] border border-white/70 bg-white/80 p-4 shadow-sm backdrop-blur transition-shadow duration-300 hover:shadow-md">
+        <div className="panel-soft mb-7 p-4 transition-shadow duration-300 hover:shadow-md">
           <ProgressBar
-            current={isCompleted ? totalStories : currentStoryIndex + 1}
+            current={totalStories === 0 ? 0 : isCompleted ? totalStories : currentStoryIndex + 1}
             total={totalStories}
             completed={isCompleted}
           />
         </div>
 
-        {isCompleted ? (
-          <section className="motion-card-enter overflow-hidden rounded-4xl border border-white/80 bg-paper/95 shadow-card">
+        {totalStories === 0 ? (
+          <section className="motion-card-enter surface-card overflow-hidden">
+            <div className="grid lg:grid-cols-[0.92fr_1.08fr]">
+              <div className="border-b border-slate-200 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.98),_transparent_42%),linear-gradient(180deg,_#f7fbff_0%,_#eef4f8_100%)] p-9 lg:border-b-0 lg:border-r lg:p-11">
+                <span className="motion-panel-enter rounded-full bg-accentSoft px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-warning">
+                  No Stories
+                </span>
+                <h2 className="mt-5 text-[2.45rem] font-semibold leading-[0.98] tracking-[-0.05em] text-ink md:text-[3rem]">
+                  The deck is empty right now.
+                </h2>
+                <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">
+                  There is nothing to guess yet, but the app shell is still ready.
+                  Add stories to the local mock dataset or drop in a fresh batch for
+                  the demo.
+                </p>
+
+                <div className="mt-8 flex items-center gap-3 border-t border-slate-200 pt-6">
+                  <Link href="/submit" className="button-primary">
+                    Open Submit Page
+                  </Link>
+                  <Link href="/leaderboard" className="button-secondary">
+                    View Leaderboard
+                  </Link>
+                </div>
+              </div>
+
+              <div className="p-9 lg:p-11">
+                <div className="rounded-[1.9rem] border border-slate-200/90 bg-white/88 p-7 shadow-sm backdrop-blur">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                    Quick Recovery
+                  </p>
+                  <div className="mt-5 space-y-4 text-base leading-7 text-slate-600">
+                    <p>Add entries to the local `mock-stories.ts` file.</p>
+                    <p>Keep titles short and reveals satisfying.</p>
+                    <p>The game loop will start working again as soon as stories exist.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        ) : null}
+
+        {totalStories > 0 && isCompleted ? (
+          <section className="motion-card-enter surface-card overflow-hidden">
             <div className="grid lg:grid-cols-[0.92fr_1.08fr]">
               <div className="border-b border-slate-200 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.98),_transparent_42%),linear-gradient(180deg,_#f7fbff_0%,_#eef4f8_100%)] p-9 lg:border-b-0 lg:border-r lg:p-11">
                 <span className="motion-panel-enter rounded-full bg-accentSoft px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-warning">
@@ -191,8 +243,8 @@ export default function HomePage() {
                 </p>
 
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                  <div className="motion-panel-enter rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-slate-200/90 transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                  <div className="motion-panel-enter panel-soft border-0 bg-white p-6 transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                    <p className="meta-label">
                       Accuracy
                     </p>
                     <p className="mt-3 text-5xl font-semibold tracking-[-0.05em] text-ink">
@@ -224,14 +276,11 @@ export default function HomePage() {
                   <button
                     type="button"
                     onClick={handleRestart}
-                    className="rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#ff7c49] hover:shadow-md active:translate-y-0 active:scale-[0.99]"
+                    className="button-primary"
                   >
                     Play Again
                   </button>
-                  <Link
-                    href="/leaderboard"
-                    className="rounded-full border border-slate-200 bg-white/90 px-5 py-3 text-sm font-semibold text-slate-600 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:text-ink hover:shadow-md active:translate-y-0"
-                  >
+                  <Link href="/leaderboard" className="button-secondary">
                     View Leaderboard
                   </Link>
                 </div>
@@ -247,51 +296,63 @@ export default function HomePage() {
                       How each guess landed
                     </h3>
                   </div>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 transition-transform duration-300 hover:-translate-y-0.5">
+                  <span className="chip-soft transition-transform duration-300 hover:-translate-y-0.5">
                     {answerHistory.length} stories
                   </span>
                 </div>
 
                 <div className="space-y-3">
-                  {answerHistory.map((item, index) => (
-                    <div
-                      key={item.storyId}
-                      className="motion-list-enter rounded-[1.5rem] border border-slate-200/90 bg-white/85 px-5 py-4 shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
-                      style={{ animationDelay: `${index * 32}ms` }}
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="min-w-0">
-                          <p className="truncate text-lg font-semibold tracking-tight text-ink">
-                            {item.title}
-                          </p>
-                          <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
-                            <span className="rounded-full bg-slate-100 px-2.5 py-1 transition-colors duration-300 hover:bg-slate-200/80">
-                              You: {item.userAnswer}
-                            </span>
-                            <span className="rounded-full bg-slate-100 px-2.5 py-1 transition-colors duration-300 hover:bg-slate-200/80">
-                              Answer: {item.correctAnswer}
-                            </span>
+                  {answerHistory.length ? (
+                    answerHistory.map((item, index) => (
+                      <div
+                        key={item.storyId}
+                        className="motion-list-enter panel-soft rounded-[1.5rem] px-5 py-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+                        style={{ animationDelay: `${index * 32}ms` }}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="min-w-0">
+                            <p className="truncate text-lg font-semibold tracking-tight text-ink">
+                              {item.title}
+                            </p>
+                            <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                              <span className="rounded-full bg-slate-100 px-2.5 py-1 transition-colors duration-300 hover:bg-slate-200/80">
+                                You: {item.userAnswer}
+                              </span>
+                              <span className="rounded-full bg-slate-100 px-2.5 py-1 transition-colors duration-300 hover:bg-slate-200/80">
+                                Answer: {item.correctAnswer}
+                              </span>
+                            </div>
                           </div>
-                        </div>
 
-                        <span
-                          className={[
-                            "shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] transition-transform duration-300 hover:-translate-y-0.5",
-                            item.isCorrect
-                              ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
-                              : "bg-rose-50 text-rose-700 ring-1 ring-rose-200",
-                          ].join(" ")}
-                        >
-                          {item.isCorrect ? "Correct" : "Miss"}
-                        </span>
+                          <span
+                            className={[
+                              "shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] transition-transform duration-300 hover:-translate-y-0.5",
+                              item.isCorrect
+                                ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
+                                : "bg-rose-50 text-rose-700 ring-1 ring-rose-200",
+                            ].join(" ")}
+                          >
+                            {item.isCorrect ? "Correct" : "Miss"}
+                          </span>
+                        </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="motion-panel-enter rounded-[1.75rem] border border-dashed border-slate-300 bg-white/82 px-6 py-10 text-center shadow-sm">
+                      <p className="text-lg font-semibold tracking-tight text-ink">
+                        No round history to review.
+                      </p>
+                      <p className="mt-3 text-sm leading-7 text-slate-500">
+                        The score summary still worked, but this session did not
+                        retain individual story outcomes.
+                      </p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>
           </section>
-        ) : (
+        ) : totalStories > 0 ? (
           <StoryCard key={currentStory.id} story={currentStory}>
             <div className="mt-10 space-y-6">
               <GuessButtons
@@ -357,7 +418,7 @@ export default function HomePage() {
                   type="button"
                   onClick={handleNextStory}
                   className={[
-                    "rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-300 ease-out",
+                    "button-base px-5 py-2.5",
                     isRevealed
                       ? "bg-accent text-white shadow-sm hover:-translate-y-0.5 hover:bg-[#ff7c49] hover:shadow-md active:translate-y-0 active:scale-[0.99]"
                       : "border border-slate-200 bg-slate-100 text-slate-400",
@@ -369,7 +430,7 @@ export default function HomePage() {
               </div>
             </div>
           </StoryCard>
-        )}
+        ) : null}
       </div>
     </main>
   );
