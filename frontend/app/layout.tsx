@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { AppShellNav } from "@/components/AppShellNav";
+import { CookieBanner } from "@/components/CookieBanner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <div className="min-h-screen">
           <AppShellNav />
           <div className="pb-8">{children}</div>
+          <CookieBanner />
         </div>
       </body>
     </html>
