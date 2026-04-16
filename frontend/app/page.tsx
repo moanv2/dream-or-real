@@ -2,6 +2,11 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import {
+  CommunityActions,
+  ReportReason,
+  VoteValue,
+} from "@/components/CommunityActions";
 import { GuessButtons } from "@/components/GuessButtons";
 import { ProgressBar } from "@/components/ProgressBar";
 import { ScoreBadge } from "@/components/ScoreBadge";
@@ -15,6 +20,11 @@ type AnswerReview = {
   userAnswer: StoryAnswer;
   correctAnswer: StoryAnswer;
   isCorrect: boolean;
+};
+
+type StoryFeedback = {
+  vote: VoteValue;
+  reportedReason?: ReportReason;
 };
 
 function getPerformanceMessage(percentageCorrect: number) {
@@ -43,6 +53,9 @@ export default function HomePage() {
   const [isRevealed, setIsRevealed] = useState(false);
   const [score, setScore] = useState(0);
   const [answerHistory, setAnswerHistory] = useState<AnswerReview[]>([]);
+  const [storyFeedback, setStoryFeedback] = useState<
+    Record<number, StoryFeedback>
+  >({});
 
   const totalStories = mockStories.length;
   const currentStory = mockStories[currentStoryIndex];
@@ -60,6 +73,7 @@ export default function HomePage() {
     () => getPerformanceMessage(percentageCorrect),
     [percentageCorrect],
   );
+  const currentStoryFeedback = storyFeedback[currentStory.id] ?? { vote: null };
 
   function handleGuess(answer: StoryAnswer) {
     if (isRevealed || isCompleted) {
@@ -102,6 +116,28 @@ export default function HomePage() {
     setIsRevealed(false);
     setScore(0);
     setAnswerHistory([]);
+    setStoryFeedback({});
+  }
+
+  function handleVoteChange(vote: VoteValue) {
+    setStoryFeedback((current) => ({
+      ...current,
+      [currentStory.id]: {
+        ...current[currentStory.id],
+        vote,
+      },
+    }));
+  }
+
+  function handleReport(reason: ReportReason) {
+    setStoryFeedback((current) => ({
+      ...current,
+      [currentStory.id]: {
+        ...current[currentStory.id],
+        vote: current[currentStory.id]?.vote ?? null,
+        reportedReason: reason,
+      },
+    }));
   }
 
   return (
@@ -295,6 +331,15 @@ export default function HomePage() {
                     {currentStory.revealText}
                   </p>
                 </section>
+              ) : null}
+
+              {isRevealed ? (
+                <CommunityActions
+                  vote={currentStoryFeedback.vote}
+                  reportedReason={currentStoryFeedback.reportedReason}
+                  onVoteChange={handleVoteChange}
+                  onReport={handleReport}
+                />
               ) : null}
 
               <div
