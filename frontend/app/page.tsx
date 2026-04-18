@@ -1,45 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ReportReason, VoteValue } from "@/components/CommunityActions";
 import { GuessButtons } from "@/components/GuessButtons";
 import { StoryCard } from "@/components/StoryCard";
 import { mockStories } from "@/lib/mock-stories";
 import type { StoryAnswer } from "@/types/story";
 
-type AnswerReview = {
-  storyId: number;
-  title: string;
-  userAnswer: StoryAnswer;
-  correctAnswer: StoryAnswer;
-  isCorrect: boolean;
-};
-
 type StoryFeedback = {
   vote: VoteValue;
   reportedReason?: ReportReason;
 };
-
-function getPerformanceMessage(percentageCorrect: number) {
-  if (percentageCorrect >= 90) {
-    return "You have unnervingly strong dream instincts.";
-  }
-
-  if (percentageCorrect >= 75) {
-    return "Strong read. You caught most of the weirdness correctly.";
-  }
-
-  if (percentageCorrect >= 50) {
-    return "Respectable. Reality and dreams kept you guessing.";
-  }
-
-  if (percentageCorrect >= 25) {
-    return "The stories won this round, but a few calls were sharp.";
-  }
-
-  return "Brutal round. The subconscious absolutely cooked you.";
-}
 
 function VoteArrowIcon({ direction }: { direction: "up" | "down" }) {
   return (
@@ -72,34 +44,20 @@ export default function HomePage() {
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [selectedReportReason, setSelectedReportReason] =
     useState<ReportReason>("low quality");
-  const [answerHistory, setAnswerHistory] = useState<AnswerReview[]>([]);
   const [storyFeedback, setStoryFeedback] = useState<Record<number, StoryFeedback>>(
     {},
   );
 
   const totalStories = mockStories.length;
-  const currentStory = mockStories[currentStoryIndex];
-  const isCompleted = currentStoryIndex >= totalStories;
-
-  const percentageCorrect = useMemo(() => {
-    if (totalStories === 0) {
-      return 0;
-    }
-
-    return Math.round((score / totalStories) * 100);
-  }, [score, totalStories]);
-
-  const performanceMessage = useMemo(
-    () => getPerformanceMessage(percentageCorrect),
-    [percentageCorrect],
-  );
+  const currentStory =
+    totalStories > 0 ? mockStories[currentStoryIndex % totalStories] : undefined;
 
   const currentStoryFeedback = currentStory
     ? storyFeedback[currentStory.id] ?? { vote: null }
     : { vote: null };
 
   function handleGuess(answer: StoryAnswer) {
-    if (isRevealed || isCompleted || !currentStory) {
+    if (isRevealed || !currentStory) {
       return;
     }
 
@@ -107,16 +65,6 @@ export default function HomePage() {
 
     setSelectedAnswer(answer);
     setIsRevealed(true);
-    setAnswerHistory((history) => [
-      ...history,
-      {
-        storyId: currentStory.id,
-        title: currentStory.title,
-        userAnswer: answer,
-        correctAnswer: currentStory.answer,
-        isCorrect,
-      },
-    ]);
 
     if (isCorrect) {
       setScore((currentScore) => currentScore + 1);
@@ -132,18 +80,7 @@ export default function HomePage() {
     setIsRevealed(false);
     setIsReportOpen(false);
     setSelectedReportReason("low quality");
-    setCurrentStoryIndex((index) => index + 1);
-  }
-
-  function handleRestart() {
-    setCurrentStoryIndex(0);
-    setSelectedAnswer(null);
-    setIsRevealed(false);
-    setScore(0);
-    setIsReportOpen(false);
-    setSelectedReportReason("low quality");
-    setAnswerHistory([]);
-    setStoryFeedback({});
+    setCurrentStoryIndex((index) => (index + 1) % totalStories);
   }
 
   function handleVoteChange(vote: VoteValue) {
@@ -237,69 +174,7 @@ export default function HomePage() {
               </Link>
             </div>
           </section>
-        ) : isCompleted ? (
-          <section className="motion-card-enter surface-card w-full max-w-[760px] px-10 py-10">
-            <span className="inline-block rounded-md bg-[rgba(76,160,96,0.12)] px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.04em] text-[#3d8b4f]">
-              Round complete
-            </span>
-            <h1 className="mt-5 font-serif text-[36px] leading-[1.15] tracking-[-0.02em] text-[var(--text-primary)]">
-              Final score: {score}/{totalStories}
-            </h1>
-            <p className="mt-4 max-w-[32rem] text-base leading-[1.65] text-[var(--text-secondary)]">
-              {performanceMessage} You finished with {percentageCorrect}% accuracy.
-            </p>
-
-            <div className="mt-8 grid gap-3">
-              {answerHistory.length ? (
-                answerHistory.map((item) => (
-                  <div
-                    key={item.storyId}
-                    className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card-reveal)] px-4 py-3"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-base font-semibold text-[var(--text-primary)]">
-                          {item.title}
-                        </p>
-                        <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                          You chose {item.userAnswer}. Correct answer: {item.correctAnswer}.
-                        </p>
-                      </div>
-                      <span
-                        className={[
-                          "rounded-md px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.04em]",
-                          item.isCorrect
-                            ? "bg-[rgba(76,160,96,0.12)] text-[#3d8b4f]"
-                            : "bg-[rgba(190,60,50,0.12)] text-[#b84233]",
-                        ].join(" ")}
-                      >
-                        {item.isCorrect ? "Correct" : "Miss"}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="rounded-xl border border-dashed border-[var(--border-card)] bg-[var(--bg-card-reveal)] px-6 py-8 text-center">
-                  <p className="text-base text-[var(--text-secondary)]">
-                    No review history was retained for this round.
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <div className="mt-8 flex flex-wrap gap-4">
-              <button type="button" onClick={handleRestart} className="button-primary">
-                Play again
-              </button>
-              <Link href="/leaderboard" className="button-subtle">
-                Leaderboard
-              </Link>
-              <Link href="/submit" className="button-subtle">
-                Submit
-              </Link>
-            </div>
-          </section>
-        ) : (
+        ) : currentStory ? (
           <StoryCard key={currentStory.id} story={currentStory}>
             <GuessButtons
               disabled={isRevealed}
@@ -445,13 +320,13 @@ export default function HomePage() {
                   onClick={handleNextStory}
                   className="mt-6 inline-flex items-center gap-1 bg-transparent p-0 text-sm font-semibold text-[var(--accent-gold)] transition-opacity duration-150 hover:opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-card)]"
                 >
-                  {currentStoryIndex === totalStories - 1 ? "See Results" : "Next Story"}
+                  Next Story
                   <span aria-hidden="true">→</span>
                 </button>
               </div>
             </div>
           </StoryCard>
-        )}
+        ) : null}
       </main>
     </div>
   );
