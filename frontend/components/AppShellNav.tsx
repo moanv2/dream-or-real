@@ -12,23 +12,26 @@ const navItems = [
 export function AppShellNav() {
   const pathname = usePathname();
 
+  if (pathname === "/") {
+    return null;
+  }
+
   return (
-    <header className="sticky top-0 z-40 px-6 pt-5 lg:px-8">
-      <div className="app-frame flex items-center justify-between rounded-[1.75rem] border border-white/80 bg-white/82 px-5 py-3 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/70">
+    <header className="sticky top-0 z-40 border-b border-[var(--border-subtle)] bg-[rgba(22,20,18,0.88)] backdrop-blur">
+      <div className="app-frame flex h-14 items-center justify-between gap-6 px-6 lg:px-0">
         <Link
           href="/"
-          className="inline-flex items-center gap-3 rounded-full transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2"
+          className="inline-flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-deep)]"
         >
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-ink text-sm font-semibold tracking-tight text-white shadow-sm">
-            D/R
+          <span className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--text-on-dark)]">
+            Dream or Real
           </span>
-          <div>
-            <p className="text-sm font-semibold tracking-tight text-ink">Dream or Real</p>
-            <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Hackathon Demo</p>
-          </div>
+          <span className="hidden text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--text-on-dark-muted)] md:inline">
+            Late-night demo
+          </span>
         </Link>
 
-        <nav className="flex items-center gap-2 rounded-full border border-slate-200/90 bg-slate-50/88 p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
+        <nav className="flex items-center gap-1">
           {navItems.map((item) => {
             const isActive =
               item.href === "/" ? pathname === "/" : pathname?.startsWith(item.href);
@@ -38,10 +41,10 @@ export function AppShellNav() {
                 key={item.href}
                 href={item.href}
                 className={[
-                  "rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2",
+                  "rounded-md px-3 py-2 text-[13px] font-semibold uppercase tracking-[0.08em] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-deep)]",
                   isActive
-                    ? "bg-white text-ink shadow-sm"
-                    : "text-slate-500 hover:-translate-y-0.5 hover:bg-white/70 hover:text-ink",
+                    ? "bg-[rgba(250,246,239,0.06)] text-[var(--text-on-dark)]"
+                    : "text-[var(--text-on-dark-muted)] hover:bg-[rgba(250,246,239,0.04)] hover:text-[var(--text-on-dark)]",
                 ].join(" ")}
               >
                 {item.label}

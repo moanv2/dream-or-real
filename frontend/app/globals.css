@@ -3,7 +3,28 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
+  --bg-deep: #161412;
+  --bg-card: #faf6ef;
+  --bg-card-reveal: #f0ebe1;
+  --text-primary: #1a1714;
+  --text-secondary: #6b6560;
+  --text-muted: #9c9590;
+  --text-on-dark: #e8e0d6;
+  --text-on-dark-muted: #7a746e;
+  --accent-dream: #3b4f7a;
+  --accent-dream-hover: #4a6199;
+  --accent-real: #b8722d;
+  --accent-real-hover: #d4863a;
+  --accent-gold: #c9a84c;
+  --accent-gold-hover: #d7b965;
+  --border-card: #e6dfd4;
+  --border-subtle: #2a2622;
+  --shadow-card:
+    0 8px 40px rgba(0, 0, 0, 0.5),
+    0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-button: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --shadow-button-hover: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
 * {
@@ -17,22 +38,41 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.96), transparent 32%),
-    radial-gradient(circle at 20% 20%, rgba(255, 138, 91, 0.09), transparent 24%),
-    linear-gradient(180deg, #f7fafc 0%, #eef3f7 55%, #e7edf3 100%);
-  color: #152033;
-  font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+  background: var(--bg-deep);
+  color: var(--text-on-dark);
+  font-family: var(--font-sans), system-ui, sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-::selection {
-  background: rgba(255, 138, 91, 0.22);
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.9) 0.5px, transparent 0.6px),
+    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.7) 0.4px, transparent 0.6px),
+    radial-gradient(circle at 50% 80%, rgba(255, 255, 255, 0.8) 0.5px, transparent 0.6px);
+  background-size: 24px 24px, 32px 32px, 18px 18px;
+  z-index: 0;
 }
 
-button {
+::selection {
+  background: rgba(201, 168, 76, 0.3);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
   font: inherit;
 }
 
@@ -43,70 +83,132 @@ img {
 
 @layer components {
   .app-page {
-    @apply min-h-screen bg-mist px-6 py-10 text-ink lg:px-8 lg:py-12;
+    @apply relative z-[1] min-h-[100dvh] px-6 pb-12 pt-8 lg:px-12 lg:pb-16 lg:pt-10;
   }
 
   .app-frame {
-    @apply mx-auto max-w-6xl;
+    @apply mx-auto max-w-[1180px];
   }
 
   .section-kicker {
-    @apply inline-flex rounded-full border border-white/70 bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500 shadow-sm backdrop-blur;
+    @apply inline-flex rounded-md border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em];
+    border-color: rgba(122, 116, 110, 0.22);
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text-on-dark-muted);
   }
 
   .section-title {
-    @apply max-w-3xl text-[2.8rem] font-semibold leading-[0.98] tracking-[-0.05em] text-ink md:text-[3.7rem];
+    @apply max-w-3xl text-[2.4rem] leading-[1.02] tracking-[-0.03em] md:text-[3.3rem];
+    font-family: var(--font-serif), Georgia, serif;
+    color: var(--text-on-dark);
   }
 
   .section-copy {
-    @apply mt-4 max-w-2xl text-base leading-7 text-slate-600 md:text-lg;
+    @apply mt-4 max-w-2xl text-base leading-8 md:text-lg;
+    color: var(--text-on-dark-muted);
   }
 
   .surface-card {
-    @apply rounded-4xl border border-white/80 bg-paper/95 shadow-card backdrop-blur;
+    @apply overflow-hidden rounded-2xl border;
+    background: var(--bg-card);
+    border-color: var(--border-card);
+    box-shadow: var(--shadow-card);
+    color: var(--text-primary);
   }
 
   .panel-soft {
-    @apply rounded-[1.75rem] border border-slate-200/90 bg-white/80 shadow-sm backdrop-blur;
+    @apply rounded-2xl border;
+    background: rgba(250, 246, 239, 0.04);
+    border-color: rgba(122, 116, 110, 0.2);
+    color: var(--text-on-dark);
   }
 
   .panel-muted {
-    @apply rounded-[1.4rem] border border-slate-200 bg-slate-50/90 shadow-sm;
+    @apply rounded-2xl border;
+    background: var(--bg-card-reveal);
+    border-color: var(--border-card);
+    color: var(--text-primary);
   }
 
   .meta-label {
-    @apply text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500;
+    @apply text-[11px] font-semibold uppercase tracking-[0.22em];
+    color: var(--text-muted);
   }
 
   .chip-soft {
-    @apply rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500;
+    @apply inline-flex items-center rounded-md border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em];
+    border-color: rgba(122, 116, 110, 0.22);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-on-dark-muted);
   }
 
   .button-base {
-    @apply inline-flex items-center justify-center rounded-full text-sm font-semibold transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent;
+    @apply inline-flex items-center justify-center rounded-xl border px-5 py-3 text-sm font-semibold uppercase tracking-[0.04em] transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-deep)];
   }
 
   .button-primary {
-    @apply inline-flex items-center justify-center rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#ff7c49] hover:shadow-md active:translate-y-0 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent;
+    @apply inline-flex items-center justify-center rounded-xl border border-transparent px-5 py-3 text-sm font-semibold uppercase tracking-[0.04em] transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-deep)];
+    background: var(--accent-gold);
+    box-shadow: var(--shadow-button);
+    color: var(--text-primary);
+  }
+
+  .button-primary:hover {
+    background: var(--accent-gold-hover);
+    box-shadow: var(--shadow-button-hover);
+    transform: translateY(-1px);
+  }
+
+  .button-primary:active {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+    transform: translateY(1px) scale(0.98);
   }
 
   .button-secondary {
-    @apply inline-flex items-center justify-center rounded-full border border-slate-200 bg-white/90 px-5 py-3 text-sm font-semibold text-slate-600 shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-slate-300 hover:text-ink hover:shadow-md active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent;
+    @apply inline-flex items-center justify-center rounded-xl border px-5 py-3 text-sm font-semibold uppercase tracking-[0.04em] transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-deep)];
+    border-color: rgba(122, 116, 110, 0.26);
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text-on-dark);
+  }
+
+  .button-secondary:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-1px);
+  }
+
+  .button-secondary:active {
+    transform: translateY(1px) scale(0.98);
   }
 
   .button-subtle {
-    @apply inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-slate-300 hover:text-ink hover:shadow-sm active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent;
+    @apply inline-flex items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent;
+    border-color: var(--border-card);
+    background: rgba(240, 235, 225, 0.75);
+    color: var(--text-secondary);
+  }
+
+  .button-subtle:hover {
+    transform: translateY(-1px);
+    background: rgba(240, 235, 225, 1);
+    color: var(--text-primary);
   }
 
   .field-input {
-    @apply w-full rounded-[1.35rem] border border-slate-200 bg-white px-4 py-3.5 text-base text-ink shadow-sm outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-slate-300 focus:shadow-md focus-visible:ring-2 focus-visible:ring-accent/20;
+    @apply w-full rounded-xl border px-4 py-3.5 text-base leading-7 outline-none transition-all duration-200 placeholder:text-[var(--text-muted)] focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent;
+    border-color: var(--border-card);
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--text-primary);
+  }
+
+  .field-input:focus {
+    border-color: rgba(201, 168, 76, 0.6);
   }
 }
 
 @keyframes fade-rise {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(20px);
   }
 
   to {
@@ -118,7 +220,7 @@ img {
 @keyframes soft-pop {
   0% {
     opacity: 0;
-    transform: translateY(8px) scale(0.985);
+    transform: translateY(10px) scale(0.985);
   }
 
   100% {
@@ -127,16 +229,44 @@ img {
   }
 }
 
+@keyframes score-pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.12);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
 .motion-card-enter {
-  animation: fade-rise 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: fade-rise 500ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .motion-panel-enter {
-  animation: soft-pop 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: soft-pop 260ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .motion-list-enter {
-  animation: fade-rise 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: fade-rise 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.motion-score-pulse {
+  animation: score-pulse 300ms ease-out;
+}
+
+@media (max-width: 767px) {
+  .app-page {
+    @apply px-5 pb-10 pt-6;
+  }
+
+  .section-title {
+    @apply text-[2.1rem];
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

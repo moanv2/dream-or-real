@@ -1,8 +1,20 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Inter, Instrument_Serif } from "next/font/google";
 import { AppShellNav } from "@/components/AppShellNav";
 import { CookieBanner } from "@/components/CookieBanner";
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-serif",
+});
 
 export const metadata: Metadata = {
   title: "Dream or Real",
@@ -16,10 +28,10 @@ type RootLayoutProps = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body>
-        <div className="min-h-screen">
+      <body className={`${inter.variable} ${instrumentSerif.variable}`}>
+        <div className="relative min-h-[100dvh]">
           <AppShellNav />
-          <div className="pb-8">{children}</div>
+          <div>{children}</div>
           <CookieBanner />
         </div>
       </body>

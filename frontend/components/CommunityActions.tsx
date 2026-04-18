@@ -1,157 +1,92 @@
-import { useState } from "react";
-
 export type VoteValue = "upvote" | "downvote" | null;
 export type ReportReason = "inappropriate" | "suspected troll" | "low quality";
 
 type CommunityActionsProps = {
   vote: VoteValue;
-  reportedReason?: ReportReason;
   onVoteChange: (vote: VoteValue) => void;
-  onReport: (reason: ReportReason) => void;
 };
 
-const reportReasons: ReportReason[] = [
-  "inappropriate",
-  "suspected troll",
-  "low quality",
-];
+function VoteArrow({ direction }: { direction: "up" | "down" }) {
+  return (
+    <svg
+      viewBox="0 0 12 12"
+      aria-hidden="true"
+      className={[
+        "h-3.5 w-3.5 fill-none stroke-current stroke-[1.7]",
+        direction === "down" ? "rotate-180" : "",
+      ].join(" ")}
+    >
+      <path d="M6 2.1 10 7.2H2z" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
 
 export function CommunityActions({
   vote,
-  reportedReason,
   onVoteChange,
-  onReport,
 }: CommunityActionsProps) {
-  const [isReportOpen, setIsReportOpen] = useState(false);
-  const [selectedReason, setSelectedReason] =
-    useState<ReportReason>("low quality");
-
   function handleVote(nextVote: Exclude<VoteValue, null>) {
     onVoteChange(vote === nextVote ? null : nextVote);
   }
 
-  function handleReportSubmit() {
-    onReport(selectedReason);
-    setIsReportOpen(false);
-  }
-
   return (
-    <div className="panel-soft rounded-[1.5rem] p-4 transition-all duration-300">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="meta-label">
-            Community Feedback
-          </p>
-          <p className="mt-1.5 text-sm leading-6 text-slate-500">
-            Quick signals for story quality and moderation.
-          </p>
-        </div>
+    <div className="border-t border-[var(--border-card)] pt-6">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">
+        Community feedback
+      </p>
+      <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">
+        Lightweight demo moderation after the reveal.
+      </p>
 
-        {reportedReason ? (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-700 ring-1 ring-amber-200">
-            Reported
-          </span>
-        ) : null}
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center gap-3">
+      <div className="mt-5 flex flex-wrap items-center gap-5">
         <button
           type="button"
           onClick={() => handleVote("upvote")}
           className={[
-            "button-subtle",
+            "inline-flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-card)]",
             vote === "upvote"
-              ? "border-emerald-300 bg-emerald-50 text-emerald-700 shadow-sm"
-              : "",
+              ? "text-[var(--accent-dream)]"
+              : "hover:text-[var(--text-primary)]",
           ].join(" ")}
           aria-pressed={vote === "upvote"}
         >
-          Upvote
+          <span
+            className={[
+              "inline-flex h-6 w-6 items-center justify-center rounded-md border transition-colors duration-150",
+              vote === "upvote"
+                ? "border-[rgba(59,79,122,0.26)] bg-[rgba(59,79,122,0.12)]"
+                : "border-[var(--border-card)] bg-[var(--bg-card-reveal)]",
+            ].join(" ")}
+          >
+            <VoteArrow direction="up" />
+          </span>
+          <span>Upvote</span>
         </button>
 
         <button
           type="button"
           onClick={() => handleVote("downvote")}
           className={[
-            "button-subtle",
+            "inline-flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-card)]",
             vote === "downvote"
-              ? "border-rose-300 bg-rose-50 text-rose-700 shadow-sm"
-              : "",
+              ? "text-[var(--accent-real)]"
+              : "hover:text-[var(--text-primary)]",
           ].join(" ")}
           aria-pressed={vote === "downvote"}
         >
-          Downvote
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setIsReportOpen((open) => !open)}
-          className={[
-            "button-subtle",
-            isReportOpen || reportedReason
-              ? "border-amber-300 bg-amber-50 text-amber-700 shadow-sm"
-              : "",
-          ].join(" ")}
-          aria-expanded={isReportOpen}
-        >
-          {reportedReason ? "Report Sent" : "Report"}
+          <span
+            className={[
+              "inline-flex h-6 w-6 items-center justify-center rounded-md border transition-colors duration-150",
+              vote === "downvote"
+                ? "border-[rgba(184,114,45,0.26)] bg-[rgba(184,114,45,0.12)]"
+                : "border-[var(--border-card)] bg-[var(--bg-card-reveal)]",
+            ].join(" ")}
+          >
+            <VoteArrow direction="down" />
+          </span>
+          <span>Downvote</span>
         </button>
       </div>
-
-      {reportedReason ? (
-        <div className="motion-panel-enter mt-4 rounded-[1.25rem] bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-600 ring-1 ring-slate-200/80">
-          Thanks. This story was marked as{" "}
-          <span className="font-semibold text-ink">{reportedReason}</span> in
-          the demo UI.
-        </div>
-      ) : null}
-
-      {isReportOpen && !reportedReason ? (
-        <div className="panel-muted motion-panel-enter mt-4 p-4">
-          <p className="meta-label">
-            Report Reason
-          </p>
-
-          <div className="mt-3 flex flex-wrap gap-2">
-            {reportReasons.map((reason) => {
-              const isSelected = selectedReason === reason;
-
-              return (
-                <button
-                  key={reason}
-                  type="button"
-                  onClick={() => setSelectedReason(reason)}
-                  className={[
-                    "rounded-full border px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2",
-                    isSelected
-                      ? "border-ink bg-ink text-white shadow-sm"
-                      : "border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-ink",
-                  ].join(" ")}
-                >
-                  {reason}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="mt-4 flex items-center gap-3">
-            <button
-              type="button"
-              onClick={handleReportSubmit}
-              className="button-base bg-ink px-4 py-2 text-white shadow-sm hover:-translate-y-0.5 hover:shadow-md active:translate-y-0"
-            >
-              Send Report
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsReportOpen(false)}
-              className="button-subtle"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }

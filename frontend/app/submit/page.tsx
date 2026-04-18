@@ -34,7 +34,6 @@ export default function SubmitPage() {
 
   function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-
     handleChange("imageName", file?.name ?? "");
   }
 
@@ -51,176 +50,168 @@ export default function SubmitPage() {
   return (
     <main className="app-page">
       <div className="app-frame">
-        <div className="mb-7 max-w-[46rem]">
-          <p className="section-kicker mb-4 transition-transform duration-300 hover:-translate-y-0.5">
-            Submit
-          </p>
-          <h1 className="section-title">
-            Send in your strangest story.
-          </h1>
-          <p className="section-copy">
-            This is a mocked frontend-only flow for the demo. Fill out the
-            story, choose the answer label, and preview the kind of submission
-            experience the product could grow into later.
-          </p>
-        </div>
+        <section className="mx-auto grid max-w-[1080px] gap-10 lg:grid-cols-[0.82fr_1.18fr]">
+          <div className="pt-4">
+            <p className="section-kicker">Submit</p>
+            <h1 className="section-title mt-5">
+              Send in your
+              <br />
+              strangest story.
+            </h1>
+            <p className="section-copy">
+              Frontend-only for now. Enough structure to feel real, without pretending
+              anything is actually being moderated yet.
+            </p>
 
-        {isSubmitted ? (
-          <section className="motion-card-enter surface-card overflow-hidden">
-            <div className="grid lg:grid-cols-[0.92fr_1.08fr]">
-              <div className="border-b border-slate-200 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.98),_transparent_42%),linear-gradient(180deg,_#f7fbff_0%,_#eef4f8_100%)] p-9 lg:border-b-0 lg:border-r lg:p-11">
-                <span className="motion-panel-enter rounded-full bg-accentSoft px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-warning">
-                  Mock Success
-                </span>
-                <h2 className="mt-5 text-[2.35rem] font-semibold leading-[0.98] tracking-[-0.05em] text-ink md:text-[3rem]">
-                  Story staged for review.
-                </h2>
-                <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">
-                  Your submission did not go anywhere yet, but the UI now feels
-                  like a real product flow. In a later version, this is where
-                  moderation and persistence would plug in.
+            <div className="mt-8 space-y-4">
+              <div className="panel-soft p-5">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-on-dark-muted)]">
+                  Writing note
                 </p>
-
-                <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                  <div className="motion-panel-enter panel-soft border-0 bg-white p-6 transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md">
-                    <p className="meta-label">
-                      Submitted As
-                    </p>
-                    <p className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-ink">
-                      {form.answer}
-                    </p>
-                  </div>
-                  <div className="motion-panel-enter rounded-[1.75rem] bg-ink p-6 text-white shadow-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/60">
-                      Image Slot
-                    </p>
-                    <p className="mt-3 text-lg font-semibold tracking-[-0.03em]">
-                      {form.imageName ? "Attached" : "No image"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-8 flex items-center gap-3 border-t border-slate-200 pt-6">
-                  <button
-                    type="button"
-                    onClick={handleNewSubmission}
-                    className="button-primary"
-                  >
-                    Submit Another
-                  </button>
-                  <Link href="/" className="button-secondary">
-                    Back to Play
-                  </Link>
-                </div>
+                <p className="mt-3 text-sm leading-7 text-[var(--text-on-dark-muted)]">
+                  The best stories are concise, weird, and believable for at least five
+                  seconds.
+                </p>
               </div>
+              <div className="panel-soft p-5">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-on-dark-muted)]">
+                  Image slot
+                </p>
+                <p className="mt-3 text-sm leading-7 text-[var(--text-on-dark-muted)]">
+                  Still mocked. The page just needs to feel ready for the next step.
+                </p>
+              </div>
+            </div>
+          </div>
 
-              <div className="p-9 lg:p-11">
-                <div className="panel-soft rounded-[1.9rem] p-7">
-                  <p className="meta-label">
-                    Submission Preview
+          {isSubmitted ? (
+            <section className="motion-card-enter surface-card">
+              <div className="grid gap-0 lg:grid-cols-[0.92fr_1.08fr]">
+                <div className="border-b border-[var(--border-card)] p-8 lg:border-b-0 lg:border-r lg:p-10">
+                  <span className="rounded-md border border-[var(--border-card)] bg-[var(--bg-card-reveal)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-secondary)]">
+                    Mock success
+                  </span>
+                  <h2 className="mt-6 font-serif text-[2.4rem] leading-[1.05] tracking-[-0.02em] text-[var(--text-primary)]">
+                    Story staged
+                    <br />
+                    for review.
+                  </h2>
+                  <p className="mt-4 text-base leading-8 text-[var(--text-secondary)]">
+                    Nothing was sent anywhere, but the submission flow now behaves like
+                    a real product surface.
                   </p>
-                  <div className="mt-5 space-y-5">
-                    <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-                        Title
+
+                  <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                    <div className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card-reveal)] p-5">
+                      <p className="meta-label">Submitted as</p>
+                      <p className="mt-3 text-2xl font-semibold capitalize text-[var(--text-primary)]">
+                        {form.answer}
                       </p>
-                      <p className="mt-2 text-xl font-semibold tracking-tight text-ink">
+                    </div>
+                    <div className="rounded-xl border border-[rgba(201,168,76,0.28)] bg-[rgba(201,168,76,0.12)] p-5">
+                      <p className="meta-label">Image slot</p>
+                      <p className="mt-3 text-lg font-semibold text-[var(--text-primary)]">
+                        {form.imageName ? "Attached" : "No image"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-8 flex flex-wrap gap-3">
+                    <button type="button" onClick={handleNewSubmission} className="button-primary">
+                      Submit another
+                    </button>
+                    <Link href="/" className="button-subtle">
+                      Back to play
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="p-8 lg:p-10">
+                  <p className="meta-label">Submission preview</p>
+                  <div className="mt-6 space-y-5 rounded-xl border border-[var(--border-card)] bg-[rgba(255,255,255,0.55)] p-6">
+                    <div>
+                      <p className="meta-label">Title</p>
+                      <p className="mt-2 text-xl font-semibold tracking-[-0.02em] text-[var(--text-primary)]">
                         {form.title || "Untitled story"}
                       </p>
                     </div>
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-                        Story Text
-                      </p>
-                      <p className="mt-2 text-base leading-7 text-slate-600">
+                      <p className="meta-label">Story text</p>
+                      <p className="mt-2 text-base leading-8 text-[var(--text-secondary)]">
                         {form.storyText ||
                           "The story text preview will appear here after submission."}
                       </p>
                     </div>
-                    <div className="flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
-                      <span className="chip-soft">
+                    <div className="flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--text-secondary)]">
+                      <span className="rounded-md border border-[var(--border-card)] bg-[var(--bg-card-reveal)] px-2.5 py-1">
                         Answer: {form.answer}
                       </span>
-                      <span className="chip-soft">
+                      <span className="rounded-md border border-[var(--border-card)] bg-[var(--bg-card-reveal)] px-2.5 py-1">
                         {form.imageName || "Image optional"}
                       </span>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
-        ) : (
-          <section className="motion-card-enter surface-card overflow-hidden">
-            <div className="grid lg:grid-cols-[0.94fr_1.06fr]">
-              <div className="border-b border-slate-200 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.98),_transparent_42%),linear-gradient(180deg,_#f7fbff_0%,_#eef4f8_100%)] p-9 lg:border-b-0 lg:border-r lg:p-11">
-                <span className="motion-panel-enter rounded-full bg-accentSoft px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-warning">
-                  Story Form
-                </span>
-                <h2 className="mt-5 text-[2.3rem] font-semibold leading-[0.98] tracking-[-0.05em] text-ink md:text-[3rem]">
-                  Make it feel real enough to question.
-                </h2>
-                <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">
-                  Strong submissions are short, strange, and just believable
-                  enough to make the reveal satisfying.
-                </p>
-
-                <div className="mt-8 grid gap-3 text-sm text-slate-600">
-                  <div className="motion-panel-enter rounded-2xl bg-white/85 px-4 py-3 ring-1 ring-slate-200/80">
-                    Keep the title concise and intriguing.
-                  </div>
-                  <div className="motion-panel-enter rounded-2xl bg-white/85 px-4 py-3 ring-1 ring-slate-200/80">
-                    Write the story text like a clean card summary.
-                  </div>
-                  <div className="motion-panel-enter rounded-2xl bg-white/85 px-4 py-3 ring-1 ring-slate-200/80">
-                    Images are mocked for now, but the slot is ready in the UI.
-                  </div>
+            </section>
+          ) : (
+            <section className="motion-card-enter surface-card p-8 lg:p-10">
+              <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
+                <div>
+                  <span className="rounded-md border border-[var(--border-card)] bg-[var(--bg-card-reveal)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-secondary)]">
+                    Story form
+                  </span>
+                  <h2 className="mt-6 font-serif text-[2.2rem] leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)]">
+                    Make it feel real
+                    <br />
+                    enough to question.
+                  </h2>
+                  <p className="mt-4 text-base leading-8 text-[var(--text-secondary)]">
+                    Keep the title concise, write the story the way players will read
+                    it, and label the answer honestly.
+                  </p>
                 </div>
-              </div>
 
-              <div className="p-9 lg:p-11">
                 <form className="space-y-6" onSubmit={handleSubmit}>
-                  <div>
+                  <div className="space-y-2">
                     <label htmlFor="story-title" className="meta-label">
-                      Story Title
+                      Story title
                     </label>
                     <input
                       id="story-title"
                       type="text"
                       value={form.title}
-                      onChange={(event) =>
-                        handleChange("title", event.target.value)
-                      }
+                      onChange={(event) => handleChange("title", event.target.value)}
                       placeholder="The Bird Outside Room 214"
-                      className="field-input mt-3"
+                      className="field-input"
                       required
                     />
                   </div>
 
-                  <div>
+                  <div className="space-y-2">
                     <label htmlFor="story-text" className="meta-label">
-                      Story Text
+                      Story text
                     </label>
                     <textarea
                       id="story-text"
                       value={form.storyText}
-                      onChange={(event) =>
-                        handleChange("storyText", event.target.value)
-                      }
+                      onChange={(event) => handleChange("storyText", event.target.value)}
                       placeholder="Write the short bizarre story exactly how you want players to read it."
-                      className="field-input mt-3 min-h-[220px] leading-7"
+                      className="field-input min-h-[220px]"
                       required
                     />
                   </div>
 
-                  <div className="grid gap-6 md:grid-cols-[1fr_1fr]">
+                  <div className="grid gap-6 md:grid-cols-2">
                     <div>
-                      <p className="meta-label">
-                        Answer Label
-                      </p>
+                      <p className="meta-label">Answer label</p>
                       <div className="mt-3 grid grid-cols-2 gap-3">
                         {(["dream", "real"] as const).map((option) => {
                           const isActive = form.answer === option;
+                          const optionTone =
+                            option === "dream"
+                              ? "border-[rgba(59,79,122,0.2)] bg-[rgba(59,79,122,0.1)] text-[var(--accent-dream)]"
+                              : "border-[rgba(184,114,45,0.2)] bg-[rgba(184,114,45,0.1)] text-[var(--accent-real)]";
 
                           return (
                             <button
@@ -228,10 +219,10 @@ export default function SubmitPage() {
                               type="button"
                               onClick={() => handleChange("answer", option)}
                               className={[
-                                "rounded-[1.25rem] border px-4 py-3 text-sm font-semibold uppercase tracking-[0.16em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2",
+                                "rounded-xl border px-4 py-3 text-sm font-semibold uppercase tracking-[0.16em] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-card)]",
                                 isActive
-                                  ? "border-ink bg-ink text-white shadow-sm"
-                                  : "border-slate-200 bg-white text-slate-600 hover:-translate-y-0.5 hover:border-slate-300 hover:text-ink hover:shadow-sm",
+                                  ? optionTone
+                                  : "border-[var(--border-card)] bg-[rgba(255,255,255,0.55)] text-[var(--text-secondary)] hover:border-[rgba(26,23,20,0.18)] hover:text-[var(--text-primary)]",
                               ].join(" ")}
                             >
                               {option}
@@ -242,25 +233,20 @@ export default function SubmitPage() {
                     </div>
 
                     <div>
-                      <label className="meta-label">
-                        Optional Image
-                      </label>
+                      <label className="meta-label">Optional image</label>
                       <label
                         htmlFor="story-image"
-                        className="mt-3 flex min-h-[116px] cursor-pointer flex-col justify-between rounded-[1.35rem] border border-dashed border-slate-300 bg-white px-4 py-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-400 hover:shadow-md"
+                        className="mt-3 flex min-h-[120px] cursor-pointer flex-col justify-between rounded-xl border border-dashed border-[rgba(107,101,96,0.28)] bg-[rgba(255,255,255,0.55)] px-4 py-4 transition-all duration-200 hover:-translate-y-[1px] hover:border-[rgba(26,23,20,0.18)]"
                       >
                         <div>
-                          <p className="text-sm font-semibold text-ink">
-                            {form.imageName
-                              ? form.imageName
-                              : "Choose a comic-style image"}
+                          <p className="text-sm font-semibold text-[var(--text-primary)]">
+                            {form.imageName ? form.imageName : "Choose a comic-style image"}
                           </p>
-                          <p className="mt-2 text-sm leading-6 text-slate-500">
-                            Visual placeholder only. Nothing uploads anywhere
-                            yet.
+                          <p className="mt-2 text-sm leading-7 text-[var(--text-secondary)]">
+                            Visual placeholder only. Nothing uploads anywhere yet.
                           </p>
                         </div>
-                        <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
                           Mock file input
                         </span>
                       </label>
@@ -274,23 +260,19 @@ export default function SubmitPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-4 border-t border-slate-200 pt-6">
-                    <p className="text-sm leading-6 text-slate-500">
-                      Frontend-only demo flow. The form looks real, but nothing
-                      is sent yet.
+                  <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--border-card)] pt-6">
+                    <p className="max-w-[24rem] text-sm leading-7 text-[var(--text-secondary)]">
+                      Frontend-only demo flow. The form looks real, but nothing is sent.
                     </p>
-                    <button
-                      type="submit"
-                      className="button-primary"
-                    >
-                      Submit Story
+                    <button type="submit" className="button-primary">
+                      Submit story
                     </button>
                   </div>
                 </form>
               </div>
-            </div>
-          </section>
-        )}
+            </section>
+          )}
+        </section>
       </div>
     </main>
   );

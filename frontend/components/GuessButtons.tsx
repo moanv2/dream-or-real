@@ -3,17 +3,17 @@ import type { StoryAnswer } from "@/types/story";
 const choices: Array<{
   label: string;
   value: StoryAnswer;
-  hint: string;
+  tone: "dream" | "real";
 }> = [
   {
     label: "Dream",
     value: "dream",
-    hint: "wild, symbolic, impossible",
+    tone: "dream",
   },
   {
     label: "Real",
     value: "real",
-    hint: "strange, but it actually happened",
+    tone: "real",
   },
 ];
 
@@ -31,7 +31,7 @@ export function GuessButtons({
   onGuess,
 }: GuessButtonsProps) {
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="flex gap-4">
       {choices.map((choice) => {
         const isSelected = selectedAnswer === choice.value;
         const isCorrect = correctAnswer === choice.value;
@@ -45,58 +45,18 @@ export function GuessButtons({
             disabled={disabled}
             aria-pressed={isSelected}
             className={[
-              "group relative overflow-hidden rounded-[1.75rem] border px-6 py-5 text-left shadow-sm transition-all duration-300 ease-out will-change-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2",
+              "flex min-h-[56px] flex-1 items-center justify-center rounded-xl border-0 px-6 py-[18px] text-base font-semibold uppercase tracking-[0.04em] text-white shadow-[var(--shadow-button)] transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-card)]",
               disabled
                 ? "cursor-default"
-                : "hover:-translate-y-1 hover:border-slate-300 hover:shadow-md active:translate-y-0 active:scale-[0.995]",
-              isSelected
-                ? isCorrect
-                  ? "border-emerald-300 bg-emerald-50/90 shadow-md"
-                  : "border-rose-300 bg-rose-50/90 shadow-md"
-                : isCorrect
-                  ? "border-emerald-300 bg-emerald-50/90 shadow-md"
-                  : "border-slate-200 bg-white/95",
+                : "hover:-translate-y-[1px] hover:shadow-[var(--shadow-button-hover)] active:translate-y-[1px] active:scale-[0.98]",
+              choice.tone === "dream"
+                ? "bg-[var(--accent-dream)] hover:bg-[var(--accent-dream-hover)]"
+                : "bg-[var(--accent-real)] hover:bg-[var(--accent-real-hover)]",
+              isRevealed && !isSelected && !isCorrect ? "opacity-35 shadow-none" : "",
+              isSelected ? "ring-2 ring-white/20" : "",
             ].join(" ")}
           >
-            <div
-              className={[
-                "absolute inset-x-0 top-0 h-1 transition-opacity duration-300",
-                isSelected
-                  ? isCorrect
-                    ? "bg-emerald-500 opacity-100"
-                    : "bg-rose-400 opacity-100"
-                  : isRevealed && isCorrect
-                    ? "bg-emerald-500 opacity-100"
-                    : "bg-transparent opacity-0",
-              ].join(" ")}
-            />
-            <div
-              className={[
-                "absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.28),transparent_55%)] opacity-0 transition-opacity duration-300",
-                disabled ? "" : "group-hover:opacity-100",
-              ].join(" ")}
-            />
-            <div className="relative flex items-start justify-between gap-3">
-              <div>
-                <p className="text-[1.35rem] font-semibold tracking-tight text-ink transition-transform duration-300 group-hover:translate-x-0.5">
-                  {choice.label}
-                </p>
-                <p className="mt-2.5 text-sm leading-6 text-slate-500 transition-colors duration-300 group-hover:text-slate-700">
-                  {choice.hint}
-                </p>
-              </div>
-
-              <div className="flex flex-col items-end gap-2">
-                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500 transition-all duration-300 group-hover:bg-slate-200/80">
-                  {choice.label}
-                </span>
-                {isSelected ? (
-                  <span className="motion-panel-enter rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-600 shadow-sm">
-                    Your pick
-                  </span>
-                ) : null}
-              </div>
-            </div>
+            <span>{choice.label}</span>
           </button>
         );
       })}
