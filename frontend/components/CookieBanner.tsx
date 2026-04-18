@@ -81,18 +81,49 @@ export function CookieBanner() {
       return;
     }
 
-    const minX = Math.min(Math.max(Math.floor(actionArea.clientWidth * 0.42), aligned.x - 24), maxX);
-    const minY = Math.min(Math.max(aligned.y - 18, 0), maxY);
+    const minTravel = Math.min(
+      320,
+      Math.max(actionArea.clientWidth * 0.7, 180),
+    );
+    const minVerticalTravel = Math.min(
+      180,
+      Math.max(actionArea.clientHeight * 0.82, 90),
+    );
+    const minHorizontalTravel = Math.min(
+      260,
+      Math.max(actionArea.clientWidth * 0.45, 120),
+    );
 
-    setNoPosition({
-      x:
-        minX >= maxX
-          ? maxX
-          : Math.floor(minX + Math.random() * Math.max(maxX - minX, 1)),
-      y:
-        minY >= maxY
-          ? maxY
-          : Math.floor(minY + Math.random() * Math.max(maxY - minY, 1)),
+    setNoPosition((current) => {
+      let nextX = current.x;
+      let nextY = current.y;
+
+      for (let attempt = 0; attempt < 16; attempt += 1) {
+        nextX = Math.floor(Math.random() * Math.max(maxX, 1));
+        nextY = Math.floor(Math.random() * Math.max(maxY, 1));
+
+        const distance = Math.hypot(nextX - current.x, nextY - current.y);
+        const verticalDistance = Math.abs(nextY - current.y);
+        const horizontalDistance = Math.abs(nextX - current.x);
+
+        if (
+          distance >= minTravel &&
+          verticalDistance >= minVerticalTravel &&
+          horizontalDistance >= minHorizontalTravel
+        ) {
+          break;
+        }
+
+        if (
+          attempt >= 10 &&
+          distance >= minTravel &&
+          verticalDistance >= minVerticalTravel * 0.65
+        ) {
+          break;
+        }
+      }
+
+      return { x: nextX, y: nextY };
     });
   }
 
@@ -137,7 +168,7 @@ export function CookieBanner() {
       <section className="pointer-events-auto motion-panel-enter relative w-full max-w-[38rem] overflow-hidden rounded-[1.05rem] border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-primary)] shadow-[0_10px_30px_rgba(0,0,0,0.26)]">
         <div
           ref={escapeAreaRef}
-          className="pointer-events-none absolute inset-x-5 bottom-[2rem] top-[6.25rem] z-20"
+          className="pointer-events-none absolute inset-3 z-20"
         >
           <button
             ref={noButtonRef}
