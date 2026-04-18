@@ -50,7 +50,7 @@ export default function SubmitPage() {
   return (
     <main className="app-page">
       <div className="app-frame">
-        <section className="mx-auto grid max-w-[1080px] gap-10 lg:grid-cols-[0.82fr_1.18fr]">
+        <section className="mx-auto grid max-w-[1180px] gap-10 lg:grid-cols-[0.72fr_1.28fr]">
           <div className="pt-4">
             <p className="section-kicker">Submit</p>
             <h1 className="section-title mt-5">
@@ -156,15 +156,13 @@ export default function SubmitPage() {
             </section>
           ) : (
             <section className="motion-card-enter surface-card p-8 lg:p-10">
-              <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
-                <div>
+              <div>
+                <div className="max-w-[34rem]">
                   <span className="rounded-md border border-[var(--border-card)] bg-[var(--bg-card-reveal)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-secondary)]">
                     Story form
                   </span>
                   <h2 className="mt-6 font-serif text-[2.2rem] leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)]">
-                    Make it feel real
-                    <br />
-                    enough to question.
+                    Make it feel real enough to question.
                   </h2>
                   <p className="mt-4 text-base leading-8 text-[var(--text-secondary)]">
                     Keep the title concise, write the story the way players will read
@@ -172,7 +170,7 @@ export default function SubmitPage() {
                   </p>
                 </div>
 
-                <form className="space-y-6" onSubmit={handleSubmit}>
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                   <div className="space-y-2">
                     <label htmlFor="story-title" className="meta-label">
                       Story title
@@ -202,7 +200,7 @@ export default function SubmitPage() {
                     />
                   </div>
 
-                  <div className="grid gap-6 md:grid-cols-2">
+                  <div className="grid gap-6 lg:grid-cols-[0.78fr_1.22fr]">
                     <div>
                       <p className="meta-label">Answer label</p>
                       <div className="mt-3 grid grid-cols-2 gap-3">
@@ -236,7 +234,7 @@ export default function SubmitPage() {
                       <label className="meta-label">Optional image</label>
                       <label
                         htmlFor="story-image"
-                        className="mt-3 flex min-h-[120px] cursor-pointer flex-col justify-between rounded-xl border border-dashed border-[rgba(107,101,96,0.28)] bg-[rgba(255,255,255,0.55)] px-4 py-4 transition-all duration-200 hover:-translate-y-[1px] hover:border-[rgba(26,23,20,0.18)]"
+                        className="mt-3 flex min-h-[148px] cursor-pointer flex-col justify-between rounded-xl border border-dashed border-[rgba(107,101,96,0.28)] bg-[rgba(255,255,255,0.55)] px-5 py-4 transition-all duration-200 hover:-translate-y-[1px] hover:border-[rgba(26,23,20,0.18)]"
                       >
                         <div>
                           <p className="text-sm font-semibold text-[var(--text-primary)]">
