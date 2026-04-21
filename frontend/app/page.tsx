@@ -189,8 +189,8 @@ export default function HomePage() {
 
             <div
               className={[
-                "overflow-hidden transition-[max-height,opacity] duration-[450ms]",
-                isRevealed ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0",
+                "transition-opacity duration-300",
+                isRevealed ? "max-h-none overflow-visible opacity-100" : "max-h-0 overflow-hidden opacity-0",
               ].join(" ")}
             >
               {revealedStory ? (
