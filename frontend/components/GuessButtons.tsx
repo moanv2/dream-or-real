@@ -45,7 +45,7 @@ export function GuessButtons({
             disabled={disabled}
             aria-pressed={isSelected}
             className={[
-              "flex min-h-[56px] flex-1 items-center justify-center rounded-xl border-0 px-6 py-[18px] text-base font-semibold uppercase tracking-[0.04em] text-white shadow-[var(--shadow-button)] transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-card)]",
+              "flex min-h-[48px] flex-1 items-center justify-center rounded-xl border-0 px-4 py-3 text-sm font-semibold uppercase tracking-[0.04em] text-white shadow-[var(--shadow-button)] transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-card)]",
               disabled
                 ? "cursor-default"
                 : "hover:-translate-y-[1px] hover:shadow-[var(--shadow-button-hover)] active:translate-y-[1px] active:scale-[0.98]",

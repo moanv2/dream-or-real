@@ -97,7 +97,7 @@ export default function HomePage() {
   const isCorrect = isRevealed && selectedAnswer === revealedStory?.label;
 
   return (
-    <div className="min-h-[100dvh]">
+    <div className="h-[100dvh] overflow-hidden">
       <header className="sticky top-0 z-40 grid h-14 grid-cols-[1fr_auto_1fr] items-center border-b border-[var(--border-subtle)] bg-[rgba(22,20,18,0.85)] px-8 backdrop-blur lg:px-12">
         <div className="justify-self-start text-sm font-semibold uppercase tracking-[0.08em] text-[var(--text-on-dark)]">
           Dream or Real
@@ -138,7 +138,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="flex min-h-[calc(100dvh-56px)] items-center justify-center px-6 py-12 lg:px-12 lg:py-16">
+      <main className="flex h-[calc(100dvh-56px)] items-center justify-center overflow-hidden px-4 py-3 lg:px-8 lg:py-4">
         {isLoading ? (
           <section className="motion-card-enter surface-card w-full max-w-[640px] px-10 py-10">
             <p className="meta-label">Loading</p>
@@ -189,30 +189,16 @@ export default function HomePage() {
               ].join(" ")}
             >
               {revealedStory ? (
-                <div className="pt-6">
-                  <div className="mb-5 h-px w-full bg-[var(--border-card)]" />
-                  <div
-                    className={[
-                      "rounded-2xl border p-5",
-                      isCorrect
-                        ? "border-[rgba(76,160,96,0.22)] bg-[rgba(76,160,96,0.09)]"
-                        : "border-[rgba(190,60,50,0.22)] bg-[rgba(190,60,50,0.08)]",
-                    ].join(" ")}
-                  >
-                    <p
-                      className={[
-                        "text-base font-semibold uppercase tracking-[0.05em]",
-                        statusTone(isCorrect),
-                      ].join(" ")}
-                    >
-                      {isCorrect ? "Right" : "Wrong"}
-                    </p>
-                    <p className="mt-3 text-base leading-8 text-[var(--text-primary)]">
-                      It was <span className="font-semibold">{revealedStory.label}</span>.
-                    </p>
-                  </div>
+                <div className="pt-4">
+                  <div className="mb-4 h-px w-full bg-[var(--border-card)]" />
+                  <p className="text-sm leading-7 text-[var(--text-primary)]">
+                    <span className={["font-semibold uppercase tracking-[0.04em]", statusTone(isCorrect)].join(" ")}>
+                      {isCorrect ? "Right." : "Wrong."}
+                    </span>{" "}
+                    It was <span className="font-semibold">{revealedStory.label}</span>.
+                  </p>
 
-                  <div className="mt-7">
+                  <div className="mt-4 flex justify-center">
                     <button type="button" onClick={() => void loadStory()} className="button-primary">
                       Next Story
                     </button>

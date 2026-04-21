@@ -14,8 +14,8 @@ export function StoryCard({ story, children }: StoryCardProps) {
   const imageSrc = story.comic_image_url ?? "/comics/library-sleepwalk.svg";
 
   return (
-    <section className="motion-card-enter surface-card mx-auto w-full max-w-[640px]">
-      <div className="relative aspect-[16/10] overflow-hidden bg-[#e8e0d6]">
+    <section className="motion-card-enter surface-card mx-auto flex w-full max-w-[640px] flex-col">
+      <div className="relative h-[clamp(150px,30dvh,240px)] shrink-0 overflow-hidden bg-[#e8e0d6]">
         {!imageUnavailable ? (
           <>
             <img
@@ -40,16 +40,16 @@ export function StoryCard({ story, children }: StoryCardProps) {
         )}
       </div>
 
-      <div className="px-10 pb-10 pt-7">
+      <div className="flex min-h-0 flex-1 flex-col px-6 pb-6 pt-4 lg:px-8 lg:pb-7 lg:pt-5">
         <p className="meta-label">{sourceLabel}</p>
-        <h2 className="font-serif text-[28px] font-normal leading-[1.3] tracking-[-0.01em] text-[var(--text-primary)]">
+        <h2 className="font-serif text-[24px] font-normal leading-[1.25] tracking-[-0.01em] text-[var(--text-primary)] lg:text-[26px]">
           {title}
         </h2>
-        <p className="mt-3 text-base leading-[1.65] text-[var(--text-secondary)]">
+        <p className="mt-2 overflow-hidden text-[15px] leading-6 text-[var(--text-secondary)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:5]">
           {story.display_text}
         </p>
 
-        {children ? <div className="mt-7">{children}</div> : null}
+        {children ? <div className="mt-4">{children}</div> : null}
       </div>
     </section>
   );
