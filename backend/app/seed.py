@@ -112,6 +112,8 @@ def seed_stories(db: Session, stories_dir: Path) -> int:
                 reveal_text=original_text,
                 comic_image_url=pick_comic_image(slug),
                 status="approved",
+                moderation_category="ok",
+                processing_state="comic_generated",
             )
             db.add(story)
             existing_slugs.add(slug)

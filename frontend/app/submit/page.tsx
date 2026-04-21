@@ -3,36 +3,41 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { submitStory } from "@/lib/api";
-import type { StoryAnswer } from "@/types/story";
+import type { StoryAnswer, StorySubmissionResponse } from "@/types/story";
 
 type SubmissionForm = {
-  title: string;
   storyText: string;
   answer: StoryAnswer;
-  revealText: string;
+  attachments: File[];
 };
 
 const initialForm: SubmissionForm = {
-  title: "",
   storyText: "",
   answer: "dream",
-  revealText: "",
+  attachments: [],
 };
+
+function outcomeLabel(result: StorySubmissionResponse): string {
+  if (result.outcome === "approved") {
+    return "Approved and Playable";
+  }
+  if (result.outcome === "rejected") {
+    return "Rejected";
+  }
+  if (result.outcome === "needs_review") {
+    return "Needs Review";
+  }
+  return "Partial Processing Failure";
+}
 
 export default function SubmitPage() {
   const [form, setForm] = useState<SubmissionForm>(initialForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submittedTitle, setSubmittedTitle] = useState<string | null>(null);
+  const [result, setResult] = useState<StorySubmissionResponse | null>(null);
 
-  function handleChange<K extends keyof SubmissionForm>(
-    field: K,
-    value: SubmissionForm[K],
-  ) {
-    setForm((current) => ({
-      ...current,
-      [field]: value,
-    }));
+  function handleChange<K extends keyof SubmissionForm>(field: K, value: SubmissionForm[K]) {
+    setForm((current) => ({ ...current, [field]: value }));
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -41,13 +46,12 @@ export default function SubmitPage() {
     setSubmitError(null);
 
     try {
-      const createdStory = await submitStory({
-        title: form.title.trim() || undefined,
-        text: form.storyText.trim(),
+      const submissionResult = await submitStory({
+        text: form.storyText,
         label: form.answer,
-        reveal_text: form.revealText.trim() || undefined,
+        attachments: form.attachments,
       });
-      setSubmittedTitle(createdStory.title ?? "Untitled story");
+      setResult(submissionResult);
       setForm(initialForm);
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : "Failed to submit story.");
@@ -58,7 +62,7 @@ export default function SubmitPage() {
 
   function handleNewSubmission() {
     setForm(initialForm);
-    setSubmittedTitle(null);
+    setResult(null);
     setSubmitError(null);
   }
 
@@ -69,87 +73,76 @@ export default function SubmitPage() {
           <div className="pt-4">
             <p className="section-kicker">Submit</p>
             <h1 className="section-title mt-5">
-              Send in your
+              Submit a story,
               <br />
-              strangest story.
+              no account needed.
             </h1>
             <p className="section-copy">
-              Anonymous submissions go straight to the local database. Every entry is
-              approved immediately and can show up in the play loop.
+              The backend stores your original text exactly, moderates it, rewrites a gameplay
+              version, and tries to generate a comic if approved.
             </p>
 
             <div className="mt-8 space-y-4">
               <div className="panel-soft p-5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-on-dark-muted)]">
-                  Writing note
+                  Required
                 </p>
                 <p className="mt-3 text-sm leading-7 text-[var(--text-on-dark-muted)]">
-                  The best stories are concise, weird, and believable for at least five
-                  seconds.
+                  Story text and answer label (`dream` or `real`).
                 </p>
               </div>
               <div className="panel-soft p-5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-on-dark-muted)]">
-                  Approval rule
+                  Optional
                 </p>
                 <p className="mt-3 text-sm leading-7 text-[var(--text-on-dark-muted)]">
-                  No moderation queue. The backend assigns a comic image automatically.
+                  Image attachments (shown only after reveal).
                 </p>
               </div>
             </div>
           </div>
 
-          {submittedTitle ? (
-            <section className="motion-card-enter surface-card">
-              <div className="grid gap-0 lg:grid-cols-[0.92fr_1.08fr]">
-                <div className="border-b border-[var(--border-card)] p-8 lg:border-b-0 lg:border-r lg:p-10">
-                  <span className="rounded-md border border-[var(--border-card)] bg-[var(--bg-card-reveal)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-secondary)]">
-                    Saved
-                  </span>
-                  <h2 className="mt-6 font-serif text-[2.4rem] leading-[1.05] tracking-[-0.02em] text-[var(--text-primary)]">
-                    Story added
-                    <br />
-                    to the game.
-                  </h2>
-                  <p className="mt-4 text-base leading-8 text-[var(--text-secondary)]">
-                    The backend stored your anonymous submission in SQLite and marked it
-                    approved right away.
+          {result ? (
+            <section className="motion-card-enter surface-card p-8 lg:p-10">
+              <span className="rounded-md border border-[var(--border-card)] bg-[var(--bg-card-reveal)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-secondary)]">
+                Submission result
+              </span>
+              <h2 className="mt-6 font-serif text-[2.2rem] leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)]">
+                {outcomeLabel(result)}
+              </h2>
+              <p className="mt-4 text-base leading-8 text-[var(--text-secondary)]">{result.message}</p>
+
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card-reveal)] p-5">
+                  <p className="meta-label">Status</p>
+                  <p className="mt-3 text-xl font-semibold tracking-[-0.02em] text-[var(--text-primary)]">
+                    {result.story.status}
                   </p>
-
-                  <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                    <div className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card-reveal)] p-5">
-                      <p className="meta-label">Title</p>
-                      <p className="mt-3 text-2xl font-semibold tracking-[-0.02em] text-[var(--text-primary)]">
-                        {submittedTitle}
-                      </p>
-                    </div>
-                    <div className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card-reveal)] p-5">
-                      <p className="meta-label">Status</p>
-                      <p className="mt-3 text-2xl font-semibold tracking-[-0.02em] text-[var(--text-primary)]">
-                        Approved
-                      </p>
-                    </div>
-                  </div>
                 </div>
-
-                <div className="p-8 lg:p-10">
-                  <p className="meta-label">Next steps</p>
-                  <div className="mt-5 rounded-2xl border border-[var(--border-card)] bg-[rgba(255,255,255,0.55)] p-5">
-                    <p className="text-base leading-8 text-[var(--text-secondary)]">
-                      Head back to the game and keep drawing random stories until your
-                      submission appears.
-                    </p>
-                  </div>
-
-                  <div className="mt-8 flex flex-wrap gap-3">
-                    <button type="button" onClick={handleNewSubmission} className="button-subtle">
-                      Submit another
-                    </button>
-                    <Link href="/" className="button-primary">
-                      Back to play
-                    </Link>
-                  </div>
+                <div className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card-reveal)] p-5">
+                  <p className="meta-label">Processing state</p>
+                  <p className="mt-3 text-xl font-semibold tracking-[-0.02em] text-[var(--text-primary)]">
+                    {result.story.processing_state ?? "n/a"}
+                  </p>
                 </div>
+              </div>
+
+              {result.story.moderation_reason ? (
+                <div className="mt-5 rounded-2xl border border-[var(--border-card)] bg-white/70 p-5">
+                  <p className="meta-label">Moderation note</p>
+                  <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">
+                    {result.story.moderation_reason}
+                  </p>
+                </div>
+              ) : null}
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                <button type="button" onClick={handleNewSubmission} className="button-subtle">
+                  Submit another
+                </button>
+                <Link href="/" className="button-primary">
+                  Back to play
+                </Link>
               </div>
             </section>
           ) : (
@@ -160,29 +153,11 @@ export default function SubmitPage() {
                     Story form
                   </span>
                   <h2 className="mt-6 font-serif text-[2.2rem] leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)]">
-                    Make it feel real enough to question.
+                    Keep it weird, specific, and plausible for five seconds.
                   </h2>
-                  <p className="mt-4 text-base leading-8 text-[var(--text-secondary)]">
-                    Keep the title concise, write the story the way players will read it,
-                    and label the answer honestly.
-                  </p>
                 </div>
 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                  <div className="space-y-2">
-                    <label htmlFor="story-title" className="meta-label">
-                      Story title
-                    </label>
-                    <input
-                      id="story-title"
-                      type="text"
-                      value={form.title}
-                      onChange={(event) => handleChange("title", event.target.value)}
-                      placeholder="The Bird Outside Room 214"
-                      className="field-input"
-                    />
-                  </div>
-
                   <div className="space-y-2">
                     <label htmlFor="story-text" className="meta-label">
                       Story text
@@ -191,22 +166,9 @@ export default function SubmitPage() {
                       id="story-text"
                       value={form.storyText}
                       onChange={(event) => handleChange("storyText", event.target.value)}
-                      placeholder="Write the short bizarre story exactly how you want players to read it."
+                      placeholder="Write the original raw story submission here."
                       className="field-input min-h-[220px]"
                       required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label htmlFor="reveal-text" className="meta-label">
-                      Reveal text
-                    </label>
-                    <textarea
-                      id="reveal-text"
-                      value={form.revealText}
-                      onChange={(event) => handleChange("revealText", event.target.value)}
-                      placeholder="Optional extra context for the reveal screen."
-                      className="field-input min-h-[140px]"
                     />
                   </div>
 
@@ -240,12 +202,20 @@ export default function SubmitPage() {
                       </div>
                     </div>
 
-                    <div className="panel-muted p-5">
-                      <p className="meta-label">MVP rules</p>
-                      <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">
-                        Text only. The backend derives preview text, stores the full
-                        story, and assigns one of the existing comic assets.
-                      </p>
+                    <div className="space-y-2">
+                      <label htmlFor="attachments" className="meta-label">
+                        Optional attachments (images)
+                      </label>
+                      <input
+                        id="attachments"
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={(event) =>
+                          handleChange("attachments", Array.from(event.target.files ?? []))
+                        }
+                        className="field-input"
+                      />
                     </div>
                   </div>
 

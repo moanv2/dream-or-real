@@ -1,55 +1,116 @@
 # dream-or-real
 
-`dream-or-real` is a small hackathon game: read a bizarre story, decide whether it was a `dream` or a `real` event, then reveal the answer. The app also accepts anonymous story submissions.
+`dream-or-real` is a hackathon game:
+- read a short bizarre story + comic image
+- guess `dream` or `real`
+- reveal the answer and context
+- submit anonymous stories
+
+This version adds AI-powered processing for **user-submitted stories**:
+- moderation/filtering on original raw text
+- rewrite/summarization for gameplay display
+- comic generation (Nano Banana Pro)
+- optional image attachments shown only on reveal
 
 ## Stack
 
-- Frontend: Next.js App Router
+- Frontend: Next.js (App Router)
 - Backend: FastAPI, SQLAlchemy 2.x, Pydantic, SQLite
-- Infra: Docker and Docker Compose
+- AI: Google Gemini via `google-genai` Python SDK
+- Infra: Docker + Docker Compose
 
-## Run It
+## Environment Variables
+
+Copy `.env.example` to `.env` and fill in values:
+
+```bash
+cp .env.example .env
+```
+
+Required for AI processing:
+- `GEMINI_API_KEY`
+- `GEMINI_TEXT_MODEL` (default: `gemini-2.5-flash`)
+- `GEMINI_IMAGE_MODEL` (default: `gemini-3-pro-image-preview`)
+
+Core app vars:
+- `DATABASE_URL`
+- `FRONTEND_ORIGIN`
+- `STORIES_DIR`
+- `MEDIA_DIR`
+- `NEXT_PUBLIC_API_BASE_URL`
+
+## Run with Docker Compose
 
 ```bash
 docker compose up --build
 ```
 
 Then open:
-
 - Frontend: `http://localhost:3000`
-- Backend health check: `http://localhost:8000/health`
+- Backend health: `http://localhost:8000/health`
 
-## Backend API
+## Submission Processing Pipeline
 
-- `GET /health`
-- `GET /api/stories/random`
-- `GET /api/stories/{story_id}/reveal`
-- `POST /api/stories/submit`
-- `GET /api/stories`
+For `source=user` stories:
+1. Store original text exactly as submitted (`original_text`)
+2. Moderate original text with Gemini structured output
+3. If approved, rewrite for gameplay (`display_text`)
+4. Generate comic image from rewrite summary (Nano Banana Pro)
+5. Save generated comic under backend media storage
 
-Example submit payload:
+If moderation rejects:
+- story is stored
+- status becomes `rejected`
+- no rewrite/comic generation
 
-```json
-{
-  "title": "The vending machine knew my nickname",
-  "text": "I bought a soda and the machine thanked me by name.",
-  "label": "dream",
-  "reveal_text": "It was a dream. The machine had my old school nickname and acted offended when I hesitated."
-}
-```
+If rewrite fails:
+- story stays approved and playable
+- backend falls back to deterministic shortening
+- processing state is marked failed
 
-## Seed Data
+If comic generation fails:
+- story stays approved and playable
+- comic remains empty
+- processing state is marked failed
 
-On backend startup, the SQLite database is seeded from the repo `stories/` directory:
+## Seed Stories
 
+On backend startup, seed data loads from:
 - `stories/Dreams/*.txt` -> `dream`
 - `stories/AmazingStories/*.txt` -> `real`
 
-Seeded stories get:
+Seeded stories are not retroactively AI-processed.
 
-- a derived `display_text` preview
-- a deterministic comic image path from `frontend/public/comics`
-- `source=seed`
-- `status=approved`
+## Media Storage
 
-Anonymous submissions are stored in the same database with `source=user` and `status=approved`.
+Stored locally under `MEDIA_DIR`:
+- uploads: `uploads/`
+- generated comics: `generated_comics/`
+
+Served by backend at:
+- `/media/uploads/...`
+- `/media/generated_comics/...`
+
+## API Endpoints
+
+- `GET /health`
+- `GET /api/stories`
+- `GET /api/stories/random`
+- `GET /api/stories/{story_id}/reveal`
+- `POST /api/stories/submit` (multipart form)
+
+### Submit Endpoint Contract
+
+`POST /api/stories/submit` (multipart form-data):
+- `text` (required)
+- `label` (`dream` or `real`, required)
+- `attachments` (optional, multiple image files)
+
+Example:
+
+```bash
+curl -X POST http://localhost:8000/api/stories/submit \
+  -F "text=I woke up on a train that seemed to move underwater." \
+  -F "label=dream" \
+  -F "attachments=@/path/to/photo.jpg"
+```

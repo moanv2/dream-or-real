@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { useState } from "react";
 import type { ReactNode } from "react";
 import type { StorySummary } from "@/types/story";
@@ -19,12 +18,10 @@ export function StoryCard({ story, children }: StoryCardProps) {
       <div className="relative aspect-[16/10] overflow-hidden bg-[#e8e0d6]">
         {!imageUnavailable ? (
           <>
-            <Image
+            <img
               src={imageSrc}
               alt={title}
-              fill
-              priority
-              className="object-cover"
+              className="h-full w-full object-cover"
               onError={() => setImageUnavailable(true)}
             />
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-b from-transparent to-[var(--bg-card)]" />

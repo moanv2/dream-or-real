@@ -183,11 +183,41 @@ export default function HomePage() {
                   </div>
 
                   <div className="mt-5 rounded-2xl border border-[var(--border-card)] bg-white/70 p-5">
-                    <p className="meta-label">Full story</p>
+                    <p className="meta-label">Gameplay version</p>
+                    <p className="mt-3 whitespace-pre-line text-sm leading-7 text-[var(--text-secondary)]">
+                      {revealedStory.display_text}
+                    </p>
+                  </div>
+
+                  <div className="mt-5 rounded-2xl border border-[var(--border-card)] bg-white/70 p-5">
+                    <p className="meta-label">Original submission</p>
                     <p className="mt-3 whitespace-pre-line text-sm leading-7 text-[var(--text-secondary)]">
                       {revealedStory.original_text}
                     </p>
                   </div>
+
+                  {revealedStory.attachments.length > 0 ? (
+                    <div className="mt-5 rounded-2xl border border-[var(--border-card)] bg-white/70 p-5">
+                      <p className="meta-label">Attachments</p>
+                      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                        {revealedStory.attachments.map((attachment) => (
+                          <a
+                            key={attachment.id}
+                            href={attachment.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="overflow-hidden rounded-xl border border-[var(--border-card)] bg-[var(--bg-card-reveal)]"
+                          >
+                            <img
+                              src={attachment.url}
+                              alt={attachment.original_filename ?? "Story attachment"}
+                              className="aspect-[4/3] w-full object-cover"
+                            />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
 
                   <div className="mt-6">
                     <CommunityActions vote={vote} onVoteChange={setVote} />

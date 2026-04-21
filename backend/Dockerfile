@@ -10,7 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN mkdir -p /app/data
+RUN mkdir -p /data/media/uploads /data/media/generated_comics
 
 EXPOSE 8000
 
