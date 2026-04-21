@@ -8,10 +8,22 @@ import { StoryCard } from "@/components/StoryCard";
 import { getRandomStory, revealStory } from "@/lib/api";
 import type { StoryAnswer, StoryReveal, StorySummary } from "@/types/story";
 
+const SCORE_STORAGE_KEY = "dream-or-real:score";
+const TOTAL_STORAGE_KEY = "dream-or-real:total";
+
 function statusTone(isCorrect: boolean) {
   return isCorrect
     ? "bg-[rgba(76,160,96,0.12)] text-[#3d8b4f]"
     : "bg-[rgba(190,60,50,0.12)] text-[#b84233]";
+}
+
+function readStoredCount(key: string) {
+  const rawValue = window.localStorage.getItem(key);
+  const parsedValue = Number.parseInt(rawValue ?? "0", 10);
+  if (Number.isNaN(parsedValue) || parsedValue < 0) {
+    return 0;
+  }
+  return parsedValue;
 }
 
 export default function HomePage() {
@@ -19,6 +31,8 @@ export default function HomePage() {
   const [revealedStory, setRevealedStory] = useState<StoryReveal | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<StoryAnswer | null>(null);
   const [score, setScore] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [statsHydrated, setStatsHydrated] = useState(false);
   const [vote, setVote] = useState<VoteValue>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRevealing, setIsRevealing] = useState(false);
@@ -46,6 +60,20 @@ export default function HomePage() {
     void loadStory();
   }, []);
 
+  useEffect(() => {
+    setScore(readStoredCount(SCORE_STORAGE_KEY));
+    setTotal(readStoredCount(TOTAL_STORAGE_KEY));
+    setStatsHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!statsHydrated) {
+      return;
+    }
+    window.localStorage.setItem(SCORE_STORAGE_KEY, String(score));
+    window.localStorage.setItem(TOTAL_STORAGE_KEY, String(total));
+  }, [score, statsHydrated, total]);
+
   async function handleGuess(answer: StoryAnswer) {
     if (!story || revealedStory || isRevealing) {
       return;
@@ -58,6 +86,7 @@ export default function HomePage() {
     try {
       const reveal = await revealStory(story.id);
       setRevealedStory(reveal);
+      setTotal((currentTotal) => currentTotal + 1);
       if (reveal.label === answer) {
         setScore((currentScore) => currentScore + 1);
       }
@@ -87,12 +116,6 @@ export default function HomePage() {
             Play
           </Link>
           <Link
-            href="/leaderboard"
-            className="rounded-md px-3 py-2 text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--text-on-dark-muted)] transition-colors duration-150 hover:bg-[rgba(250,246,239,0.04)] hover:text-[var(--text-on-dark)]"
-          >
-            Leaderboard
-          </Link>
-          <Link
             href="/submit"
             className="rounded-md px-3 py-2 text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--text-on-dark-muted)] transition-colors duration-150 hover:bg-[rgba(250,246,239,0.04)] hover:text-[var(--text-on-dark)]"
           >
@@ -100,13 +123,23 @@ export default function HomePage() {
           </Link>
         </nav>
 
-        <div className="justify-self-end flex flex-col items-end gap-0.5">
-          <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--text-on-dark-muted)]">
-            Score
-          </span>
-          <span className="text-xl font-bold leading-none text-[var(--accent-gold)]">
-            {score}
-          </span>
+        <div className="justify-self-end flex items-end gap-5">
+          <div className="flex flex-col items-end gap-0.5">
+            <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--text-on-dark-muted)]">
+              Score
+            </span>
+            <span className="text-xl font-bold leading-none text-[var(--accent-gold)]">
+              {score}
+            </span>
+          </div>
+          <div className="flex flex-col items-end gap-0.5">
+            <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--text-on-dark-muted)]">
+              Total
+            </span>
+            <span className="text-xl font-bold leading-none text-[var(--text-on-dark)]">
+              {total}
+            </span>
+          </div>
         </div>
       </header>
 
