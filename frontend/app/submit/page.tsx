@@ -1,26 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { FormEvent, useState } from "react";
+import { submitStory } from "@/lib/api";
 import type { StoryAnswer } from "@/types/story";
 
 type SubmissionForm = {
   title: string;
   storyText: string;
   answer: StoryAnswer;
-  imageName: string;
+  revealText: string;
 };
 
 const initialForm: SubmissionForm = {
   title: "",
   storyText: "",
   answer: "dream",
-  imageName: "",
+  revealText: "",
 };
 
 export default function SubmitPage() {
   const [form, setForm] = useState<SubmissionForm>(initialForm);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submittedTitle, setSubmittedTitle] = useState<string | null>(null);
 
   function handleChange<K extends keyof SubmissionForm>(
     field: K,
@@ -32,19 +35,31 @@ export default function SubmitPage() {
     }));
   }
 
-  function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    handleChange("imageName", file?.name ?? "");
-  }
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setIsSubmitted(true);
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const createdStory = await submitStory({
+        title: form.title.trim() || undefined,
+        text: form.storyText.trim(),
+        label: form.answer,
+        reveal_text: form.revealText.trim() || undefined,
+      });
+      setSubmittedTitle(createdStory.title ?? "Untitled story");
+      setForm(initialForm);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Failed to submit story.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function handleNewSubmission() {
     setForm(initialForm);
-    setIsSubmitted(false);
+    setSubmittedTitle(null);
+    setSubmitError(null);
   }
 
   return (
@@ -59,8 +74,8 @@ export default function SubmitPage() {
               strangest story.
             </h1>
             <p className="section-copy">
-              Frontend-only for now. Enough structure to feel real, without pretending
-              anything is actually being moderated yet.
+              Anonymous submissions go straight to the local database. Every entry is
+              approved immediately and can show up in the play loop.
             </p>
 
             <div className="mt-8 space-y-4">
@@ -75,81 +90,64 @@ export default function SubmitPage() {
               </div>
               <div className="panel-soft p-5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-on-dark-muted)]">
-                  Image slot
+                  Approval rule
                 </p>
                 <p className="mt-3 text-sm leading-7 text-[var(--text-on-dark-muted)]">
-                  Still mocked. The page just needs to feel ready for the next step.
+                  No moderation queue. The backend assigns a comic image automatically.
                 </p>
               </div>
             </div>
           </div>
 
-          {isSubmitted ? (
+          {submittedTitle ? (
             <section className="motion-card-enter surface-card">
               <div className="grid gap-0 lg:grid-cols-[0.92fr_1.08fr]">
                 <div className="border-b border-[var(--border-card)] p-8 lg:border-b-0 lg:border-r lg:p-10">
                   <span className="rounded-md border border-[var(--border-card)] bg-[var(--bg-card-reveal)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-secondary)]">
-                    Mock success
+                    Saved
                   </span>
                   <h2 className="mt-6 font-serif text-[2.4rem] leading-[1.05] tracking-[-0.02em] text-[var(--text-primary)]">
-                    Story staged
+                    Story added
                     <br />
-                    for review.
+                    to the game.
                   </h2>
                   <p className="mt-4 text-base leading-8 text-[var(--text-secondary)]">
-                    Nothing was sent anywhere, but the submission flow now behaves like
-                    a real product surface.
+                    The backend stored your anonymous submission in SQLite and marked it
+                    approved right away.
                   </p>
 
                   <div className="mt-8 grid gap-4 sm:grid-cols-2">
                     <div className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card-reveal)] p-5">
-                      <p className="meta-label">Submitted as</p>
-                      <p className="mt-3 text-2xl font-semibold capitalize text-[var(--text-primary)]">
-                        {form.answer}
+                      <p className="meta-label">Title</p>
+                      <p className="mt-3 text-2xl font-semibold tracking-[-0.02em] text-[var(--text-primary)]">
+                        {submittedTitle}
                       </p>
                     </div>
-                    <div className="rounded-xl border border-[rgba(201,168,76,0.28)] bg-[rgba(201,168,76,0.12)] p-5">
-                      <p className="meta-label">Image slot</p>
-                      <p className="mt-3 text-lg font-semibold text-[var(--text-primary)]">
-                        {form.imageName ? "Attached" : "No image"}
+                    <div className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card-reveal)] p-5">
+                      <p className="meta-label">Status</p>
+                      <p className="mt-3 text-2xl font-semibold tracking-[-0.02em] text-[var(--text-primary)]">
+                        Approved
                       </p>
                     </div>
-                  </div>
-
-                  <div className="mt-8 flex flex-wrap gap-3">
-                    <button type="button" onClick={handleNewSubmission} className="button-primary">
-                      Submit another
-                    </button>
-                    <Link href="/" className="button-subtle">
-                      Back to play
-                    </Link>
                   </div>
                 </div>
 
                 <div className="p-8 lg:p-10">
-                  <p className="meta-label">Submission preview</p>
-                  <div className="mt-6 space-y-5 rounded-xl border border-[var(--border-card)] bg-[rgba(255,255,255,0.55)] p-6">
-                    <div>
-                      <p className="meta-label">Title</p>
-                      <p className="mt-2 text-xl font-semibold tracking-[-0.02em] text-[var(--text-primary)]">
-                        {form.title || "Untitled story"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="meta-label">Story text</p>
-                      <p className="mt-2 text-base leading-8 text-[var(--text-secondary)]">
-                        {form.storyText ||
-                          "The story text preview will appear here after submission."}
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--text-secondary)]">
-                      <span className="rounded-md border border-[var(--border-card)] bg-[var(--bg-card-reveal)] px-2.5 py-1">
-                        Answer: {form.answer}
-                      </span>
-                      <span className="rounded-md border border-[var(--border-card)] bg-[var(--bg-card-reveal)] px-2.5 py-1">
-                        {form.imageName || "Image optional"}
-                      </span>
-                    </div>
+                  <p className="meta-label">Next steps</p>
+                  <div className="mt-5 rounded-2xl border border-[var(--border-card)] bg-[rgba(255,255,255,0.55)] p-5">
+                    <p className="text-base leading-8 text-[var(--text-secondary)]">
+                      Head back to the game and keep drawing random stories until your
+                      submission appears.
+                    </p>
+                  </div>
+
+                  <div className="mt-8 flex flex-wrap gap-3">
+                    <button type="button" onClick={handleNewSubmission} className="button-subtle">
+                      Submit another
+                    </button>
+                    <Link href="/" className="button-primary">
+                      Back to play
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -165,8 +163,8 @@ export default function SubmitPage() {
                     Make it feel real enough to question.
                   </h2>
                   <p className="mt-4 text-base leading-8 text-[var(--text-secondary)]">
-                    Keep the title concise, write the story the way players will read
-                    it, and label the answer honestly.
+                    Keep the title concise, write the story the way players will read it,
+                    and label the answer honestly.
                   </p>
                 </div>
 
@@ -182,7 +180,6 @@ export default function SubmitPage() {
                       onChange={(event) => handleChange("title", event.target.value)}
                       placeholder="The Bird Outside Room 214"
                       className="field-input"
-                      required
                     />
                   </div>
 
@@ -197,6 +194,19 @@ export default function SubmitPage() {
                       placeholder="Write the short bizarre story exactly how you want players to read it."
                       className="field-input min-h-[220px]"
                       required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label htmlFor="reveal-text" className="meta-label">
+                      Reveal text
+                    </label>
+                    <textarea
+                      id="reveal-text"
+                      value={form.revealText}
+                      onChange={(event) => handleChange("revealText", event.target.value)}
+                      placeholder="Optional extra context for the reveal screen."
+                      className="field-input min-h-[140px]"
                     />
                   </div>
 
@@ -220,7 +230,7 @@ export default function SubmitPage() {
                                 "rounded-xl border px-4 py-3 text-sm font-semibold uppercase tracking-[0.16em] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-card)]",
                                 isActive
                                   ? optionTone
-                                  : "border-[var(--border-card)] bg-[rgba(255,255,255,0.55)] text-[var(--text-secondary)] hover:border-[rgba(26,23,20,0.18)] hover:text-[var(--text-primary)]",
+                                  : "border-[var(--border-card)] bg-[rgba(255,255,255,0.55)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]",
                               ].join(" ")}
                             >
                               {option}
@@ -230,41 +240,28 @@ export default function SubmitPage() {
                       </div>
                     </div>
 
-                    <div>
-                      <label className="meta-label">Optional image</label>
-                      <label
-                        htmlFor="story-image"
-                        className="mt-3 flex min-h-[148px] cursor-pointer flex-col justify-between rounded-xl border border-dashed border-[rgba(107,101,96,0.28)] bg-[rgba(255,255,255,0.55)] px-5 py-4 transition-all duration-200 hover:-translate-y-[1px] hover:border-[rgba(26,23,20,0.18)]"
-                      >
-                        <div>
-                          <p className="text-sm font-semibold text-[var(--text-primary)]">
-                            {form.imageName ? form.imageName : "Choose a comic-style image"}
-                          </p>
-                          <p className="mt-2 text-sm leading-7 text-[var(--text-secondary)]">
-                            Visual placeholder only. Nothing uploads anywhere yet.
-                          </p>
-                        </div>
-                        <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
-                          Mock file input
-                        </span>
-                      </label>
-                      <input
-                        id="story-image"
-                        type="file"
-                        accept="image/*"
-                        className="sr-only"
-                        onChange={handleImageChange}
-                      />
+                    <div className="panel-muted p-5">
+                      <p className="meta-label">MVP rules</p>
+                      <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">
+                        Text only. The backend derives preview text, stores the full
+                        story, and assigns one of the existing comic assets.
+                      </p>
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--border-card)] pt-6">
-                    <p className="max-w-[24rem] text-sm leading-7 text-[var(--text-secondary)]">
-                      Frontend-only demo flow. The form looks real, but nothing is sent.
-                    </p>
-                    <button type="submit" className="button-primary">
-                      Submit story
+                  {submitError ? (
+                    <div className="rounded-2xl border border-[rgba(190,60,50,0.22)] bg-[rgba(190,60,50,0.08)] px-4 py-3 text-sm leading-7 text-[#8e2f25]">
+                      {submitError}
+                    </div>
+                  ) : null}
+
+                  <div className="flex flex-wrap gap-3 pt-2">
+                    <button type="submit" className="button-primary" disabled={isSubmitting}>
+                      {isSubmitting ? "Submitting..." : "Submit story"}
                     </button>
+                    <Link href="/" className="button-subtle">
+                      Back to play
+                    </Link>
                   </div>
                 </form>
               </div>

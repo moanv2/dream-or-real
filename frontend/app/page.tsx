@@ -1,121 +1,76 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { ReportReason, VoteValue } from "@/components/CommunityActions";
+import { useEffect, useState } from "react";
+import { CommunityActions, type VoteValue } from "@/components/CommunityActions";
 import { GuessButtons } from "@/components/GuessButtons";
 import { StoryCard } from "@/components/StoryCard";
-import { mockStories } from "@/lib/mock-stories";
-import type { StoryAnswer } from "@/types/story";
+import { getRandomStory, revealStory } from "@/lib/api";
+import type { StoryAnswer, StoryReveal, StorySummary } from "@/types/story";
 
-type StoryFeedback = {
-  vote: VoteValue;
-  reportedReason?: ReportReason;
-};
-
-function VoteArrowIcon({ direction }: { direction: "up" | "down" }) {
-  return (
-    <svg
-      viewBox="0 0 20 20"
-      aria-hidden="true"
-      className={[
-        "h-[18px] w-[18px] fill-current",
-        direction === "down" ? "rotate-180" : "",
-      ].join(" ")}
-    >
-      <path d="M10 1.5 19 10h-4.2v8.5H5.2V10H1z" />
-    </svg>
-  );
-}
-
-function FlagIcon() {
-  return (
-    <svg viewBox="0 0 20 20" aria-hidden="true" className="h-[18px] w-[18px] fill-current">
-      <path d="M5 1.75a1 1 0 0 1 1 1v.46h7.05c1.68 0 2.55 2.03 1.37 3.26l-.43.44c-.5.52-.5 1.33 0 1.85l.43.44c1.18 1.23.31 3.26-1.37 3.26H6v4.79a1 1 0 1 1-2 0V2.75a1 1 0 0 1 1-1Z" />
-    </svg>
-  );
+function statusTone(isCorrect: boolean) {
+  return isCorrect
+    ? "bg-[rgba(76,160,96,0.12)] text-[#3d8b4f]"
+    : "bg-[rgba(190,60,50,0.12)] text-[#b84233]";
 }
 
 export default function HomePage() {
-  const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
+  const [story, setStory] = useState<StorySummary | null>(null);
+  const [revealedStory, setRevealedStory] = useState<StoryReveal | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<StoryAnswer | null>(null);
-  const [isRevealed, setIsRevealed] = useState(false);
   const [score, setScore] = useState(0);
-  const [isReportOpen, setIsReportOpen] = useState(false);
-  const [selectedReportReason, setSelectedReportReason] =
-    useState<ReportReason>("low quality");
-  const [storyFeedback, setStoryFeedback] = useState<Record<number, StoryFeedback>>(
-    {},
-  );
+  const [vote, setVote] = useState<VoteValue>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRevealing, setIsRevealing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const totalStories = mockStories.length;
-  const currentStory =
-    totalStories > 0 ? mockStories[currentStoryIndex % totalStories] : undefined;
+  async function loadStory() {
+    setIsLoading(true);
+    setError(null);
+    setVote(null);
+    setSelectedAnswer(null);
+    setRevealedStory(null);
 
-  const currentStoryFeedback = currentStory
-    ? storyFeedback[currentStory.id] ?? { vote: null }
-    : { vote: null };
+    try {
+      const nextStory = await getRandomStory();
+      setStory(nextStory);
+    } catch (loadError) {
+      setStory(null);
+      setError(loadError instanceof Error ? loadError.message : "Failed to load a story.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
-  function handleGuess(answer: StoryAnswer) {
-    if (isRevealed || !currentStory) {
+  useEffect(() => {
+    void loadStory();
+  }, []);
+
+  async function handleGuess(answer: StoryAnswer) {
+    if (!story || revealedStory || isRevealing) {
       return;
     }
-
-    const isCorrect = answer === currentStory.answer;
 
     setSelectedAnswer(answer);
-    setIsRevealed(true);
+    setIsRevealing(true);
+    setError(null);
 
-    if (isCorrect) {
-      setScore((currentScore) => currentScore + 1);
+    try {
+      const reveal = await revealStory(story.id);
+      setRevealedStory(reveal);
+      if (reveal.label === answer) {
+        setScore((currentScore) => currentScore + 1);
+      }
+    } catch (revealError) {
+      setSelectedAnswer(null);
+      setError(revealError instanceof Error ? revealError.message : "Failed to reveal story.");
+    } finally {
+      setIsRevealing(false);
     }
   }
 
-  function handleNextStory() {
-    if (!isRevealed) {
-      return;
-    }
-
-    setSelectedAnswer(null);
-    setIsRevealed(false);
-    setIsReportOpen(false);
-    setSelectedReportReason("low quality");
-    setCurrentStoryIndex((index) => (index + 1) % totalStories);
-  }
-
-  function handleVoteChange(vote: VoteValue) {
-    if (!currentStory) {
-      return;
-    }
-
-    setStoryFeedback((current) => ({
-      ...current,
-      [currentStory.id]: {
-        ...current[currentStory.id],
-        vote: current[currentStory.id]?.vote === vote ? null : vote,
-        reportedReason: current[currentStory.id]?.reportedReason,
-      },
-    }));
-  }
-
-  function handleReport(reason: ReportReason) {
-    if (!currentStory) {
-      return;
-    }
-
-    setStoryFeedback((current) => ({
-      ...current,
-      [currentStory.id]: {
-        vote: current[currentStory.id]?.vote ?? null,
-        reportedReason: reason,
-      },
-    }));
-  }
-
-  function handleReportSubmit() {
-    handleReport(selectedReportReason);
-    setIsReportOpen(false);
-  }
+  const isRevealed = Boolean(revealedStory);
+  const isCorrect = isRevealed && selectedAnswer === revealedStory?.label;
 
   return (
     <div className="min-h-[100dvh]">
@@ -156,175 +111,108 @@ export default function HomePage() {
       </header>
 
       <main className="flex min-h-[calc(100dvh-56px)] items-center justify-center px-6 py-12 lg:px-12 lg:py-16">
-        {totalStories === 0 ? (
+        {isLoading ? (
           <section className="motion-card-enter surface-card w-full max-w-[640px] px-10 py-10">
-            <h1 className="font-serif text-[32px] leading-[1.18] tracking-[-0.02em] text-[var(--text-primary)]">
-              No stories available.
+            <p className="meta-label">Loading</p>
+            <h1 className="mt-4 font-serif text-[32px] leading-[1.18] tracking-[-0.02em] text-[var(--text-primary)]">
+              Pulling a strange story from the stack.
             </h1>
             <p className="mt-4 text-base leading-[1.65] text-[var(--text-secondary)]">
-              Add entries to the local mock dataset and the game screen will start
-              working again immediately.
+              The backend is choosing a random approved story and hiding the answer
+              until you guess.
+            </p>
+          </section>
+        ) : !story ? (
+          <section className="motion-card-enter surface-card w-full max-w-[640px] px-10 py-10">
+            <p className="meta-label">Problem</p>
+            <h1 className="mt-4 font-serif text-[32px] leading-[1.18] tracking-[-0.02em] text-[var(--text-primary)]">
+              The story feed is unavailable.
+            </h1>
+            <p className="mt-4 text-base leading-[1.65] text-[var(--text-secondary)]">
+              {error ?? "No story was returned."}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/submit" className="button-primary">
+              <button type="button" onClick={() => void loadStory()} className="button-primary">
+                Try again
+              </button>
+              <Link href="/submit" className="button-subtle">
                 Submit story
-              </Link>
-              <Link href="/leaderboard" className="button-subtle">
-                Leaderboard
               </Link>
             </div>
           </section>
-        ) : currentStory ? (
-          <StoryCard key={currentStory.id} story={currentStory}>
+        ) : story ? (
+          <StoryCard key={story.id} story={story}>
+            {error ? (
+              <div className="mb-5 rounded-2xl border border-[rgba(190,60,50,0.22)] bg-[rgba(190,60,50,0.08)] px-4 py-3 text-sm leading-7 text-[#8e2f25]">
+                {error}
+              </div>
+            ) : null}
+
             <GuessButtons
-              disabled={isRevealed}
+              disabled={isRevealed || isRevealing}
               selectedAnswer={selectedAnswer}
-              correctAnswer={isRevealed ? currentStory.answer : undefined}
-              onGuess={handleGuess}
+              correctAnswer={revealedStory?.label}
+              onGuess={(answer) => void handleGuess(answer)}
             />
 
             <div
               className={[
                 "overflow-hidden transition-[max-height,opacity] duration-[450ms]",
-                isRevealed ? "max-h-[640px] opacity-100" : "max-h-0 opacity-0",
+                isRevealed ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0",
               ].join(" ")}
             >
-              <div className="pt-6">
-                <div className="mb-5 h-px w-full bg-[var(--border-card)]" />
-
-                <div className="flex items-start justify-between gap-4">
+              {revealedStory ? (
+                <div className="pt-6">
+                  <div className="mb-5 h-px w-full bg-[var(--border-card)]" />
                   <span
                     className={[
                       "inline-block rounded-md px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.04em]",
-                      selectedAnswer === currentStory.answer
-                        ? "bg-[rgba(76,160,96,0.12)] text-[#3d8b4f]"
-                        : "bg-[rgba(190,60,50,0.12)] text-[#b84233]",
+                      statusTone(Boolean(isCorrect)),
                     ].join(" ")}
                   >
-                    {selectedAnswer === currentStory.answer
-                      ? `Correct - This was a ${currentStory.answer}`
-                      : `Incorrect - This was a ${currentStory.answer}`}
+                    {isCorrect
+                      ? `Correct - This was ${revealedStory.label}`
+                      : `Incorrect - This was ${revealedStory.label}`}
                   </span>
 
-                  <button
-                    type="button"
-                    onClick={() => setIsReportOpen((open) => !open)}
-                    aria-pressed={Boolean(currentStoryFeedback.reportedReason) || isReportOpen}
-                    className={[
-                      "inline-flex h-9 w-9 items-center justify-center rounded-[10px] border transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-card)]",
-                      currentStoryFeedback.reportedReason || isReportOpen
-                        ? "border-[rgba(26,23,20,0.12)] bg-[var(--text-primary)] text-[var(--bg-card)]"
-                        : "border-[var(--border-card)] bg-[rgba(255,255,255,0.62)] text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.9)]",
-                    ].join(" ")}
-                  >
-                    <FlagIcon />
-                  </button>
-                </div>
-
-                <div className="mt-4 flex items-start gap-5">
-                  <p className="flex-1 text-[15px] leading-[1.6] text-[var(--text-secondary)]">
-                    {currentStory.revealText}
-                  </p>
-
-                  <div className="flex shrink-0 flex-col items-center gap-3 pt-0.5">
-                    <button
-                      type="button"
-                      onClick={() => handleVoteChange("upvote")}
-                      aria-pressed={currentStoryFeedback.vote === "upvote"}
-                      className={[
-                        "inline-flex h-9 w-9 items-center justify-center rounded-[10px] border transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-card)]",
-                        currentStoryFeedback.vote === "upvote"
-                          ? "border-[rgba(184,114,45,0.24)] bg-[rgba(184,114,45,0.12)] text-[var(--accent-real)]"
-                          : "border-[var(--border-card)] bg-[rgba(255,255,255,0.62)] text-[var(--text-muted)] hover:text-[var(--accent-real)]",
-                      ].join(" ")}
-                    >
-                      <VoteArrowIcon direction="up" />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleVoteChange("downvote")}
-                      aria-pressed={currentStoryFeedback.vote === "downvote"}
-                      className={[
-                        "inline-flex h-9 w-9 items-center justify-center rounded-[10px] border transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-card)]",
-                        currentStoryFeedback.vote === "downvote"
-                          ? "border-[rgba(59,79,122,0.24)] bg-[rgba(59,79,122,0.1)] text-[var(--accent-dream)]"
-                          : "border-[var(--border-card)] bg-[rgba(255,255,255,0.62)] text-[var(--text-muted)] hover:text-[var(--accent-dream)]",
-                      ].join(" ")}
-                    >
-                      <VoteArrowIcon direction="down" />
-                    </button>
-                  </div>
-                </div>
-
-                {currentStoryFeedback.reportedReason ? (
-                  <div className="mt-4 rounded-xl border border-[var(--border-card)] bg-[var(--bg-card-reveal)] px-4 py-3 text-sm leading-7 text-[var(--text-secondary)]">
-                    Report saved in the demo as{" "}
-                    <span className="font-semibold text-[var(--text-primary)]">
-                      {currentStoryFeedback.reportedReason}
-                    </span>.
-                  </div>
-                ) : null}
-
-                {isReportOpen && !currentStoryFeedback.reportedReason ? (
-                  <div className="motion-panel-enter mt-4 rounded-xl border border-[var(--border-card)] bg-[var(--bg-card-reveal)] p-4">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">
-                      Report reason
+                  <div className="mt-5 rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card-reveal)] p-5">
+                    <p className="meta-label">Reveal</p>
+                    <p className="mt-3 text-base leading-8 text-[var(--text-primary)]">
+                      {revealedStory.reveal_text}
                     </p>
-
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {(["inappropriate", "suspected troll", "low quality"] as const).map(
-                        (reason) => {
-                          const isSelected = selectedReportReason === reason;
-
-                          return (
-                            <button
-                              key={reason}
-                              type="button"
-                              onClick={() => setSelectedReportReason(reason)}
-                              className={[
-                                "rounded-md border px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-card-reveal)]",
-                                isSelected
-                                  ? "border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg-card)]"
-                                  : "border-[var(--border-card)] bg-[rgba(255,255,255,0.65)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]",
-                              ].join(" ")}
-                            >
-                              {reason}
-                            </button>
-                          );
-                        },
-                      )}
-                    </div>
-
-                    <div className="mt-4 flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={handleReportSubmit}
-                        className="button-subtle"
-                      >
-                        Send report
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setIsReportOpen(false)}
-                        className="text-sm font-medium text-[var(--text-secondary)] transition-colors duration-150 hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-card-reveal)]"
-                      >
-                        Cancel
-                      </button>
-                    </div>
                   </div>
-                ) : null}
 
-                <button
-                  type="button"
-                  onClick={handleNextStory}
-                  className="mt-6 inline-flex items-center gap-1 bg-transparent p-0 text-sm font-semibold text-[var(--accent-gold)] transition-opacity duration-150 hover:opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-card)]"
-                >
-                  Next Story
-                  <span aria-hidden="true">→</span>
-                </button>
-              </div>
+                  <div className="mt-5 rounded-2xl border border-[var(--border-card)] bg-white/70 p-5">
+                    <p className="meta-label">Full story</p>
+                    <p className="mt-3 whitespace-pre-line text-sm leading-7 text-[var(--text-secondary)]">
+                      {revealedStory.original_text}
+                    </p>
+                  </div>
+
+                  <div className="mt-6">
+                    <CommunityActions vote={vote} onVoteChange={setVote} />
+                  </div>
+
+                  <div className="mt-7 flex flex-wrap gap-3">
+                    <button type="button" onClick={() => void loadStory()} className="button-primary">
+                      Another story
+                    </button>
+                    <Link href="/submit" className="button-subtle">
+                      Submit one
+                    </Link>
+                  </div>
+                </div>
+              ) : null}
             </div>
+
+            {!isRevealed ? (
+              <div className="mt-5 flex items-center justify-between gap-3 text-sm text-[var(--text-secondary)]">
+                <span>Pick first. The backend only reveals the answer after your guess.</span>
+                {isRevealing ? (
+                  <span className="font-semibold text-[var(--text-primary)]">Revealing...</span>
+                ) : null}
+              </div>
+            ) : null}
           </StoryCard>
         ) : null}
       </main>

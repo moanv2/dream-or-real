@@ -1,15 +1,18 @@
 import Image from "next/image";
 import { useState } from "react";
 import type { ReactNode } from "react";
-import type { Story } from "@/types/story";
+import type { StorySummary } from "@/types/story";
 
 type StoryCardProps = {
-  story: Story;
+  story: StorySummary;
   children?: ReactNode;
 };
 
 export function StoryCard({ story, children }: StoryCardProps) {
   const [imageUnavailable, setImageUnavailable] = useState(false);
+  const title = story.title ?? "Untitled story";
+  const sourceLabel = story.source === "seed" ? "Seed story" : "Community story";
+  const imageSrc = story.comic_image_url ?? "/comics/library-sleepwalk.svg";
 
   return (
     <section className="motion-card-enter surface-card mx-auto w-full max-w-[640px]">
@@ -17,8 +20,8 @@ export function StoryCard({ story, children }: StoryCardProps) {
         {!imageUnavailable ? (
           <>
             <Image
-              src={story.comicImage}
-              alt={story.title}
+              src={imageSrc}
+              alt={title}
               fill
               priority
               className="object-cover"
@@ -33,8 +36,7 @@ export function StoryCard({ story, children }: StoryCardProps) {
                 Artwork unavailable
               </p>
               <p className="mt-4 text-sm leading-7 text-[var(--text-secondary)]">
-                The story still works without the image. A replacement visual can
-                be dropped in later without changing the layout.
+                The story still works without the image.
               </p>
             </div>
           </div>
@@ -42,11 +44,12 @@ export function StoryCard({ story, children }: StoryCardProps) {
       </div>
 
       <div className="px-10 pb-10 pt-7">
+        <p className="meta-label">{sourceLabel}</p>
         <h2 className="font-serif text-[28px] font-normal leading-[1.3] tracking-[-0.01em] text-[var(--text-primary)]">
-          {story.title}
+          {title}
         </h2>
         <p className="mt-3 text-base leading-[1.65] text-[var(--text-secondary)]">
-          {story.summary}
+          {story.display_text}
         </p>
 
         {children ? <div className="mt-7">{children}</div> : null}

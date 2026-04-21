@@ -1,0 +1,28 @@
+services:
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: sqlite:////data/dream_or_real.db
+      FRONTEND_ORIGIN: http://localhost:3000
+      STORIES_DIR: /stories
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./stories:/stories:ro
+      - backend_data:/data
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  backend_data:
