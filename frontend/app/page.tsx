@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { CommunityActions, type VoteValue } from "@/components/CommunityActions";
 import { GuessButtons } from "@/components/GuessButtons";
 import { StoryCard } from "@/components/StoryCard";
 import { getRandomStory, revealStory } from "@/lib/api";
@@ -12,9 +11,7 @@ const SCORE_STORAGE_KEY = "dream-or-real:score";
 const TOTAL_STORAGE_KEY = "dream-or-real:total";
 
 function statusTone(isCorrect: boolean) {
-  return isCorrect
-    ? "bg-[rgba(76,160,96,0.12)] text-[#3d8b4f]"
-    : "bg-[rgba(190,60,50,0.12)] text-[#b84233]";
+  return isCorrect ? "text-[#3d8b4f]" : "text-[#b84233]";
 }
 
 function readStoredCount(key: string) {
@@ -33,7 +30,6 @@ export default function HomePage() {
   const [score, setScore] = useState(0);
   const [total, setTotal] = useState(0);
   const [statsHydrated, setStatsHydrated] = useState(false);
-  const [vote, setVote] = useState<VoteValue>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRevealing, setIsRevealing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +37,6 @@ export default function HomePage() {
   async function loadStory() {
     setIsLoading(true);
     setError(null);
-    setVote(null);
     setSelectedAnswer(null);
     setRevealedStory(null);
 
@@ -196,72 +191,31 @@ export default function HomePage() {
               {revealedStory ? (
                 <div className="pt-6">
                   <div className="mb-5 h-px w-full bg-[var(--border-card)]" />
-                  <span
+                  <div
                     className={[
-                      "inline-block rounded-md px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.04em]",
-                      statusTone(Boolean(isCorrect)),
+                      "rounded-2xl border p-5",
+                      isCorrect
+                        ? "border-[rgba(76,160,96,0.22)] bg-[rgba(76,160,96,0.09)]"
+                        : "border-[rgba(190,60,50,0.22)] bg-[rgba(190,60,50,0.08)]",
                     ].join(" ")}
                   >
-                    {isCorrect
-                      ? `Correct - This was ${revealedStory.label}`
-                      : `Incorrect - This was ${revealedStory.label}`}
-                  </span>
-
-                  <div className="mt-5 rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card-reveal)] p-5">
-                    <p className="meta-label">Reveal</p>
+                    <p
+                      className={[
+                        "text-base font-semibold uppercase tracking-[0.05em]",
+                        statusTone(isCorrect),
+                      ].join(" ")}
+                    >
+                      {isCorrect ? "Right" : "Wrong"}
+                    </p>
                     <p className="mt-3 text-base leading-8 text-[var(--text-primary)]">
-                      {revealedStory.reveal_text}
+                      It was <span className="font-semibold">{revealedStory.label}</span>.
                     </p>
                   </div>
 
-                  <div className="mt-5 rounded-2xl border border-[var(--border-card)] bg-white/70 p-5">
-                    <p className="meta-label">Gameplay version</p>
-                    <p className="mt-3 whitespace-pre-line text-sm leading-7 text-[var(--text-secondary)]">
-                      {revealedStory.display_text}
-                    </p>
-                  </div>
-
-                  <div className="mt-5 rounded-2xl border border-[var(--border-card)] bg-white/70 p-5">
-                    <p className="meta-label">Original submission</p>
-                    <p className="mt-3 whitespace-pre-line text-sm leading-7 text-[var(--text-secondary)]">
-                      {revealedStory.original_text}
-                    </p>
-                  </div>
-
-                  {revealedStory.attachments.length > 0 ? (
-                    <div className="mt-5 rounded-2xl border border-[var(--border-card)] bg-white/70 p-5">
-                      <p className="meta-label">Attachments</p>
-                      <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                        {revealedStory.attachments.map((attachment) => (
-                          <a
-                            key={attachment.id}
-                            href={attachment.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="overflow-hidden rounded-xl border border-[var(--border-card)] bg-[var(--bg-card-reveal)]"
-                          >
-                            <img
-                              src={attachment.url}
-                              alt={attachment.original_filename ?? "Story attachment"}
-                              className="aspect-[4/3] w-full object-cover"
-                            />
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  ) : null}
-
-                  <div className="mt-6">
-                    <CommunityActions vote={vote} onVoteChange={setVote} />
-                  </div>
-
-                  <div className="mt-7 flex flex-wrap gap-3">
+                  <div className="mt-7">
                     <button type="button" onClick={() => void loadStory()} className="button-primary">
-                      Another story
+                      Next Story
                     </button>
-                    <Link href="/submit" className="button-subtle">
-                      Submit one
-                    </Link>
                   </div>
                 </div>
               ) : null}
