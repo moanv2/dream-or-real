@@ -123,7 +123,7 @@ export default function HomePage() {
           </Link>
         </nav>
 
-        <div className="justify-self-end flex items-end gap-5">
+        <div className="justify-self-end flex w-[160px] items-end justify-end gap-5">
           <div className="flex flex-col items-end gap-0.5">
             <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--text-on-dark-muted)]">
               Score
@@ -151,8 +151,7 @@ export default function HomePage() {
               Pulling a strange story from the stack.
             </h1>
             <p className="mt-4 text-base leading-[1.65] text-[var(--text-secondary)]">
-              The backend is choosing a random approved story and hiding the answer
-              until you guess.
+              Pulling the next story for your round.
             </p>
           </section>
         ) : !story ? (
@@ -270,7 +269,7 @@ export default function HomePage() {
 
             {!isRevealed ? (
               <div className="mt-5 flex items-center justify-between gap-3 text-sm text-[var(--text-secondary)]">
-                <span>Pick first. The backend only reveals the answer after your guess.</span>
+                <span>Pick your answer first.</span>
                 {isRevealing ? (
                   <span className="font-semibold text-[var(--text-primary)]">Revealing...</span>
                 ) : null}

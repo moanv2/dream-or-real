@@ -73,14 +73,9 @@ export default function SubmitPage() {
           <div className="pt-4">
             <p className="section-kicker">Submit</p>
             <h1 className="section-title mt-5">
-              Submit a story,
-              <br />
-              no account needed.
+              Submit a story.
             </h1>
-            <p className="section-copy">
-              The backend stores your original text exactly, moderates it, rewrites a gameplay
-              version, and tries to generate a comic if approved.
-            </p>
+            <p className="section-copy">Share it directly and we will run it through the game.</p>
 
             <div className="mt-8 space-y-4">
               <div className="panel-soft p-5">
@@ -96,7 +91,7 @@ export default function SubmitPage() {
                   Optional
                 </p>
                 <p className="mt-3 text-sm leading-7 text-[var(--text-on-dark-muted)]">
-                  Image attachments (shown only after reveal).
+                  Image attachments.
                 </p>
               </div>
             </div>
@@ -166,7 +161,7 @@ export default function SubmitPage() {
                       id="story-text"
                       value={form.storyText}
                       onChange={(event) => handleChange("storyText", event.target.value)}
-                      placeholder="Write the original raw story submission here."
+                      placeholder="Write your story."
                       className="field-input min-h-[220px]"
                       required
                     />

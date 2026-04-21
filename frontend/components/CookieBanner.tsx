@@ -156,11 +156,11 @@ export function CookieBanner() {
   }
 
   const helperCopy = isNoConverted
-    ? "Perfect. That is the kind of informed consent energy we were hoping for."
+    ? "Perfect. You win."
     : isNoUnlocked
       ? "Fine. You found it. Go ahead and click it."
       : attempts === 0
-        ? "These demo cookies do nothing except make the ritual feel official."
+        ? "Try saying no."
         : `Your preference has been noted and artistically avoided. Survive ${unlockThreshold - attempts} more move${unlockThreshold - attempts === 1 ? "" : "s"}.`;
 
   return (
@@ -197,9 +197,6 @@ export function CookieBanner() {
           <h2 className="mt-1.5 max-w-[29rem] font-serif text-[1rem] leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)] sm:text-[1.15rem]">
             May we deploy some absolutely essential demo cookies?
           </h2>
-          <p className="mt-1.5 max-w-[31rem] text-[0.84rem] leading-5 text-[var(--text-secondary)]">
-            Demo joke only. Not legal advice, not production consent.
-          </p>
 
           <div className="mt-2 text-[0.84rem] leading-5 text-[var(--text-secondary)]">
             {helperCopy}
@@ -215,9 +212,6 @@ export function CookieBanner() {
             </button>
           </div>
 
-          <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
-            Page-load only. Refresh and it returns.
-          </p>
         </div>
       </section>
     </div>
