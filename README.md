@@ -83,18 +83,67 @@ Seeded stories are not retroactively AI-processed.
 
 ## Refreshing cold-start data (Reddit scraper)
 
-Cold-start stories can be regenerated from Reddit without any API key:
+Cold-start stories are scraped directly from Reddit's public JSON endpoints
+(no API key or OAuth needed). Posts are persisted in the
+`scraped_reddit_posts` table inside `data/dream_or_real.db`, de-duplicated on
+`reddit_id`, and can later be linked to gameplay `stories` via `story_id`.
+
+Run inside the container:
 
 ```bash
-docker compose run --rm backend python -m app.cli.scrape
+docker compose run --rm backend python -m app.scrape_reddit --limit 20 --sort hot
 ```
 
-This fetches ~50 posts from r/Dreams and r/AmazingStories, filters them, and inserts into the database. See `backend/app/scrapers/` for details. Uses Scrapling under the hood.
+Or from a local venv (from the `backend/` directory):
 
-Scraper configuration:
-- `SCRAPER_USER_AGENT`: Custom User-Agent for requests
-- `SCRAPE_LIMIT_PER_SUB`: Posts per subreddit (default 50)
-- `SCRAPE_DELAY_SECONDS`: Delay between requests (default 2)
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python -m app.scrape_reddit --limit 20
+```
+
+CLI flags:
+- `--subreddit NAME` (repeatable; defaults to `dreams` and `amazingstories`)
+- `--limit N` — max posts fetched per subreddit (default 20)
+- `--sort {hot,new,top,rising}` (default `hot`)
+- `--include-empty` — also store link-only posts with no body
+- `--delay-seconds N` — override the inter-subreddit delay
+- `-v/--verbose`
+
+Scraper configuration (env vars):
+- `SCRAPER_USER_AGENT` — custom `User-Agent` for requests
+- `SCRAPE_LIMIT_PER_SUB` — default posts per subreddit (default 50)
+- `SCRAPE_DELAY_SECONDS` — delay between subreddit requests (default 2)
+
+### Security model
+
+The scraper is designed to run safely in an untrusted sandbox:
+
+- **Read-only, no credentials.** It only hits Reddit's public HTTPS JSON
+  endpoints. No API keys, no OAuth, no cookies are stored or sent.
+- **TLS enforced.** `verify=True` on every request; redirects are restricted
+  to public hosts (`follow_redirects="safe"`) so the scraper cannot be
+  redirected to an internal/private IP.
+- **Input allow-listing.** Subreddit names are validated against a strict
+  regex (`^[A-Za-z0-9_]{2,21}$`) before being interpolated into the URL,
+  preventing path traversal or header injection through CLI input.
+- **Parameterized DB writes.** All inserts/updates go through the SQLAlchemy
+  ORM; there is no string-built SQL.
+- **Length-capped fields.** Every free-text field is truncated to its
+  column's `VARCHAR` limit before hitting the database.
+- **Bounded I/O.** A 15-second timeout, 3-retry cap, and configurable
+  inter-request delay keep the scraper from hanging or flooding upstream.
+- **Isolated environment.** Run it inside the Docker container or in a
+  dedicated Python venv (`backend/.venv`) so Scrapling and its transitive
+  deps (curl_cffi, browser-impersonation payloads) never pollute your
+  system Python.
+
+Tests (no network I/O) live at `backend/tests/test_reddit_scraper.py`:
+
+```bash
+cd backend && .venv/bin/python -m pytest tests/test_reddit_scraper.py
+```
 
 ## Media Storage
 
