@@ -9,6 +9,9 @@ services:
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       GEMINI_TEXT_MODEL: ${GEMINI_TEXT_MODEL:-gemini-2.5-flash}
       GEMINI_IMAGE_MODEL: ${GEMINI_IMAGE_MODEL:-gemini-3-pro-image-preview}
+      SCRAPER_USER_AGENT: "${SCRAPER_USER_AGENT:-dream-or-real/0.1 (contact: maintainer@example.com)}"
+      SCRAPE_LIMIT_PER_SUB: ${SCRAPE_LIMIT_PER_SUB:-50}
+      SCRAPE_DELAY_SECONDS: ${SCRAPE_DELAY_SECONDS:-2}
     ports:
       - "8000:8000"
     volumes:
