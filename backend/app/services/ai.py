@@ -30,6 +30,7 @@ class ModerationResult(BaseModel):
 
 
 class RewriteResult(BaseModel):
+    title: str = Field(description="Short gameplay title that does not reveal dream vs real.")
     display_text: str = Field(description="Gameplay-ready rewritten story text.")
     comic_summary: str = Field(description="1-2 sentence visual summary for comic generation.")
 
@@ -115,7 +116,16 @@ def rewrite_story_for_gameplay(original_text: str) -> RewriteResult:
             result = RewriteResult.model_validate_json(_extract_response_text(response))
         cleaned_display = build_display_text(result.display_text, limit=420)
         cleaned_summary = build_display_text(result.comic_summary, limit=280)
-        return RewriteResult(display_text=cleaned_display, comic_summary=cleaned_summary)
+        cleaned_title = " ".join(result.title.split()).strip()
+        if not cleaned_title:
+            cleaned_title = "Untitled story"
+        if len(cleaned_title) > 80:
+            cleaned_title = cleaned_title[:80].rstrip()
+        return RewriteResult(
+            title=cleaned_title,
+            display_text=cleaned_display,
+            comic_summary=cleaned_summary,
+        )
     except Exception as exc:  # pragma: no cover - network/API behavior
         raise GeminiServiceError(f"Rewrite failed: {exc}") from exc
 

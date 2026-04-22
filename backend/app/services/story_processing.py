@@ -161,6 +161,7 @@ async def process_user_story_submission(
 
     try:
         rewrite = rewrite_story_for_gameplay(story.original_text)
+        story.title = rewrite.title
         story.display_text = rewrite.display_text
         story.processing_state = "rewritten"
     except GeminiServiceError:

@@ -24,10 +24,12 @@ Constraints:
 - Preserve the actual events and tone from the original.
 - Keep ambiguity so players can still guess dream vs real.
 - Do not explicitly reveal whether it is dream or real.
+- Remove obvious giveaway clues such as: "this is a dream", "it was a dream", "this really happened", "true story", "in real life", or direct label statements.
 - Keep a natural narrative voice, not robotic.
 - Remove filler and redundancy.
 - Do not invent new facts.
 - Target length: 280 to 420 characters.
+- Produce a short, intriguing title (4-10 words) that does not reveal dream vs real.
 - Also produce a concise 1-2 sentence visual summary for comic generation.
 
 Original text:
