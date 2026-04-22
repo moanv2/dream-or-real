@@ -81,6 +81,21 @@ On backend startup, seed data loads from:
 
 Seeded stories are not retroactively AI-processed.
 
+## Refreshing cold-start data (Reddit scraper)
+
+Cold-start stories can be regenerated from Reddit without any API key:
+
+```bash
+docker compose run --rm backend python -m app.cli.scrape
+```
+
+This fetches ~50 posts from r/Dreams and r/AmazingStories, filters them, and inserts into the database. See `backend/app/scrapers/` for details. Uses Scrapling under the hood.
+
+Scraper configuration:
+- `SCRAPER_USER_AGENT`: Custom User-Agent for requests
+- `SCRAPE_LIMIT_PER_SUB`: Posts per subreddit (default 50)
+- `SCRAPE_DELAY_SECONDS`: Delay between requests (default 2)
+
 ## Media Storage
 
 Stored locally under `MEDIA_DIR`:
