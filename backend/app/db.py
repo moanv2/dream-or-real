@@ -48,3 +48,37 @@ def apply_migrations() -> None:
     with engine.begin() as connection:
         for column_name, column_sql in missing_columns:
             connection.execute(text(f"ALTER TABLE stories ADD COLUMN {column_name} {column_sql}"))
+
+
+def ensure_story_stats(db: Session, story_id: int) -> None:
+    """
+    Ensure a StoryStats row exists for the given story_id.
+
+    If no row exists, insert one with zero values. Idempotent — safe to call multiple times.
+
+    Args:
+        db: SQLAlchemy Session
+        story_id: ID of the story
+    """
+    from sqlalchemy import select
+
+    from app.models import StoryStats
+
+    existing = db.scalar(select(StoryStats).where(StoryStats.story_id == story_id))
+    if not existing:
+        stats = StoryStats(
+            story_id=story_id,
+            times_served=0,
+            times_guessed_dream=0,
+            times_guessed_real=0,
+            times_correct=0,
+            times_incorrect=0,
+            avg_latency_ms=0.0,
+            last_played_at=None,
+        )
+        db.add(stats)
+        try:
+            db.commit()
+        except Exception:
+            db.rollback()
+            raise
