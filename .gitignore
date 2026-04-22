@@ -65,6 +65,14 @@ dream_or_real.db-journal
 backend/data/
 data/dream_or_real.db
 
+# Pytest cache (non-standard dir names)
+pytest-cache-files-*/
+
+# Local IDE / agent state
+.claude/
+knowledge/
+.DS_Store
+
 # Flask stuff:
 instance/
 .webassets-cache

@@ -10,6 +10,8 @@ from app.config import settings
 from app.db import Base, SessionLocal, apply_migrations, engine
 from app.routers.stories import router as stories_router
 from app.seed import seed_stories
+from app.analytics.router import router as extras_analytics_router
+from user_analytics import router as analytics_router
 
 
 @asynccontextmanager
@@ -41,3 +43,5 @@ def healthcheck() -> dict[str, str]:
 
 
 app.include_router(stories_router)
+app.include_router(analytics_router)
+app.include_router(extras_analytics_router)

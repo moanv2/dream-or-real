@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const navItems = [
   { href: "/", label: "Play" },
   { href: "/submit", label: "Submit" },
+  { href: "/analytics", label: "Analytics" },
 ];
 
 export function AppShellNav() {

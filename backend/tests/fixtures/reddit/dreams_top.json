@@ -1,0 +1,106 @@
+{
+  "kind": "Listing",
+  "data": {
+    "modhash": "test",
+    "dist": 5,
+    "children": [
+      {
+        "kind": "t3",
+        "data": {
+          "id": "abc123",
+          "subreddit": "Dreams",
+          "title": "The Most Vivid Dream I Ever Had",
+          "selftext": "I remember every single detail of this dream. It was like waking up in another world. I walked through a forest made of silver trees, each one chiming like a bell when the wind passed through. The sky was this deep purple color, and there were two moons - one red, one blue. I kept walking deeper and deeper until I found this massive crystal palace. Inside, there were rooms upon rooms, each one containing memories I had forgotten. This went on for hours in the dream, but when I woke up, only five minutes had passed in real time. I've never experienced anything like it before or since.",
+          "author": "dream_explorer_42",
+          "permalink": "/r/Dreams/comments/abc123/the_most_vivid_dream_i_ever_had/",
+          "score": 142,
+          "upvote_ratio": 0.95,
+          "num_comments": 23,
+          "created_utc": 1640000000,
+          "over_18": false,
+          "link_flair_text": "Vivid Dream",
+          "is_self": true,
+          "url": "https://www.reddit.com/r/Dreams/comments/abc123/the_most_vivid_dream_i_ever_had/"
+        }
+      },
+      {
+        "kind": "t3",
+        "data": {
+          "id": "def456",
+          "subreddit": "Dreams",
+          "title": "Recurring Nightmare That Changed My Life",
+          "selftext": "I used to have this recurring nightmare that would happen at least twice a month. In the dream, I was always running through an endless hallway with doors on both sides. No matter how many doors I opened, there were always more. The hallway kept getting narrower and narrower. I would wake up gasping for air. I started keeping a dream journal and talking to a therapist about it. After months of analysis, I realized the nightmare was about my anxiety about life choices. The narrow hallway represented my feeling of being trapped. Once I understood the symbolism, the nightmare stopped occurring almost completely.",
+          "author": "psychology_nerd",
+          "permalink": "/r/Dreams/comments/def456/recurring_nightmare_that_changed_my_life/",
+          "score": 89,
+          "upvote_ratio": 0.88,
+          "num_comments": 15,
+          "created_utc": 1639999000,
+          "over_18": false,
+          "link_flair_text": null,
+          "is_self": true,
+          "url": "https://www.reddit.com/r/Dreams/comments/def456/recurring_nightmare_that_changed_my_life/"
+        }
+      },
+      {
+        "kind": "t3",
+        "data": {
+          "id": "ghi789",
+          "subreddit": "Dreams",
+          "title": "Flying Dream Experience",
+          "selftext": "Last night I had the most amazing flying dream. I was able to soar through the sky, moving effortlessly between clouds. The sensation was incredible, like my entire body was weightless. I could see the world below me, but it was rendered in these strange, beautiful colors that don't exist in real life. Flying dreams are supposed to represent freedom and empowerment. In my life right now, I'm going through some major changes - new job, new relationship, new city - and I think the dream reflects how liberated I feel about all these new beginnings.",
+          "author": "sky_dreamer",
+          "permalink": "/r/Dreams/comments/ghi789/flying_dream_experience/",
+          "score": 156,
+          "upvote_ratio": 0.92,
+          "num_comments": 31,
+          "created_utc": 1639998000,
+          "over_18": false,
+          "link_flair_text": "Dream Meaning",
+          "is_self": true,
+          "url": "https://www.reddit.com/r/Dreams/comments/ghi789/flying_dream_experience/"
+        }
+      },
+      {
+        "kind": "t3",
+        "data": {
+          "id": "jkl012",
+          "subreddit": "Dreams",
+          "title": "NSFW Dream - Not for Sensitive Readers",
+          "selftext": "This dream was very adult in nature and I want to discuss it with the community. I found myself in a situation that was quite explicit and involved multiple scenarios that I wouldn't normally describe in polite conversation. The dream left me feeling confused about my subconscious desires. Should I be concerned about what these dreams mean about my character?",
+          "author": "anonymous_dreamer",
+          "permalink": "/r/Dreams/comments/jkl012/nsfw_dream/",
+          "score": 45,
+          "upvote_ratio": 0.71,
+          "num_comments": 8,
+          "created_utc": 1639997000,
+          "over_18": true,
+          "link_flair_text": "NSFW",
+          "is_self": true,
+          "url": "https://www.reddit.com/r/Dreams/comments/jkl012/nsfw_dream/"
+        }
+      },
+      {
+        "kind": "t3",
+        "data": {
+          "id": "mno345",
+          "subreddit": "Dreams",
+          "title": "[deleted]",
+          "selftext": "[deleted]",
+          "author": "[deleted]",
+          "permalink": "/r/Dreams/comments/mno345/deleted/",
+          "score": 0,
+          "upvote_ratio": 0.5,
+          "num_comments": 0,
+          "created_utc": 1639996000,
+          "over_18": false,
+          "link_flair_text": null,
+          "is_self": true,
+          "url": "https://www.reddit.com/r/Dreams/comments/mno345/deleted/"
+        }
+      }
+    ],
+    "after": "t3_pqr678",
+    "before": null
+  }
+}
