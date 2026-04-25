@@ -7,7 +7,9 @@ from pathlib import Path
 class Settings:
     def __init__(self) -> None:
         self.database_url = os.getenv("DATABASE_URL", "sqlite:///./data/dream_or_real.db")
-        self.frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
+        raw_origins = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
+        self.frontend_origins = [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
+        self.frontend_origin = self.frontend_origins[0] if self.frontend_origins else "http://localhost:3000"
         self.stories_dir = Path(os.getenv("STORIES_DIR", "/stories"))
         self.media_dir = Path(os.getenv("MEDIA_DIR", "./media"))
         self.gemini_api_key = os.getenv("GEMINI_API_KEY", "")

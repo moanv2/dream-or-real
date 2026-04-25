@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { resolveAssetUrl } from "@/lib/asset-path";
 import type { StorySummary } from "@/types/story";
 
 type StoryCardProps = {
@@ -11,7 +12,7 @@ export function StoryCard({ story, children }: StoryCardProps) {
   const [imageUnavailable, setImageUnavailable] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const title = story.title ?? "Untitled story";
-  const imageSrc = story.comic_image_url ?? "/comics/library-sleepwalk.svg";
+  const imageSrc = resolveAssetUrl(story.comic_image_url ?? "/comics/library-sleepwalk.svg");
 
   useEffect(() => {
     if (!isLightboxOpen) {

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { EasterEggOverlay } from "@/components/EasterEggOverlay";
 import { GuessButtons } from "@/components/GuessButtons";
 import { StoryCard } from "@/components/StoryCard";
 import { getRandomStory, revealStory } from "@/lib/api";
@@ -98,6 +99,7 @@ export default function HomePage() {
 
   return (
     <div className="h-[100svh] overflow-hidden md:h-[100dvh]">
+      <EasterEggOverlay active={!isLoading && !!story && !revealedStory && !isRevealing} />
       <header className="sticky top-0 z-40 grid h-14 grid-cols-[1fr_auto_1fr] items-center border-b border-[var(--border-subtle)] bg-[rgba(22,20,18,0.85)] px-3 backdrop-blur sm:px-5 lg:px-12">
         <div className="justify-self-start w-[96px] text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-on-dark)] sm:w-[160px] sm:text-sm">
           Dream or Real

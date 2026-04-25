@@ -1,0 +1,4 @@
+# Drop image files here.
+# Supported: .png .jpg .jpeg .gif .webp .avif
+# A random one will flash for ~2s every 20-60s while a story is on screen.
+# Run `npm run dev` (or `npm run build`) — the prebuild script auto-discovers files.

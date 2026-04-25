@@ -3,7 +3,7 @@ services:
     build: ./backend
     environment:
       DATABASE_URL: sqlite:////data/dream_or_real.db
-      FRONTEND_ORIGIN: http://localhost:3000
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:3000,https://moanv2.github.io}
       STORIES_DIR: /stories
       MEDIA_DIR: /data/media
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
