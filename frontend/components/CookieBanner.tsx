@@ -164,7 +164,7 @@ export function CookieBanner() {
         : `Your preference has been noted and artistically avoided. Survive ${unlockThreshold - attempts} more move${unlockThreshold - attempts === 1 ? "" : "s"}.`;
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center px-6 pb-6 lg:px-8">
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center px-3 pb-3 sm:px-6 sm:pb-6 lg:px-8">
       <section className="pointer-events-auto motion-panel-enter relative w-full max-w-[38rem] overflow-hidden rounded-[1.05rem] border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-primary)] shadow-[0_10px_30px_rgba(0,0,0,0.26)]">
         <div
           ref={escapeAreaRef}
@@ -190,15 +190,15 @@ export function CookieBanner() {
           </button>
         </div>
 
-        <div className="px-5 pb-3 pt-3">
+        <div className="px-4 pb-3 pt-3 sm:px-5">
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
             Cookie situation
           </p>
-          <h2 className="mt-1.5 max-w-[29rem] font-serif text-[1rem] leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)] sm:text-[1.15rem]">
+          <h2 className="mt-1.5 max-w-[29rem] font-serif text-[0.95rem] leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)] sm:text-[1.15rem]">
             May we deploy some absolutely essential demo cookies?
           </h2>
 
-          <div className="mt-2 text-[0.84rem] leading-5 text-[var(--text-secondary)]">
+          <div className="mt-2 text-[0.8rem] leading-5 text-[var(--text-secondary)] sm:text-[0.84rem]">
             {helperCopy}
           </div>
 

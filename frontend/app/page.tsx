@@ -97,65 +97,65 @@ export default function HomePage() {
   const isCorrect = isRevealed && selectedAnswer === revealedStory?.label;
 
   return (
-    <div className="h-[100dvh] overflow-hidden">
-      <header className="sticky top-0 z-40 grid h-14 grid-cols-[1fr_auto_1fr] items-center border-b border-[var(--border-subtle)] bg-[rgba(22,20,18,0.85)] px-8 backdrop-blur lg:px-12">
-        <div className="justify-self-start text-sm font-semibold uppercase tracking-[0.08em] text-[var(--text-on-dark)]">
+    <div className="h-[100svh] overflow-hidden md:h-[100dvh]">
+      <header className="sticky top-0 z-40 grid h-14 grid-cols-[1fr_auto_1fr] items-center border-b border-[var(--border-subtle)] bg-[rgba(22,20,18,0.85)] px-3 backdrop-blur sm:px-5 lg:px-12">
+        <div className="justify-self-start w-[96px] text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-on-dark)] sm:w-[160px] sm:text-sm">
           Dream or Real
         </div>
 
-        <nav className="justify-self-center flex items-center gap-1">
+        <nav className="justify-self-center flex items-center gap-1 sm:gap-1.5">
           <Link
             href="/"
-            className="rounded-md bg-[rgba(250,246,239,0.08)] px-3 py-2 text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--text-on-dark)] transition-colors duration-150 hover:bg-[rgba(250,246,239,0.12)]"
+            className="rounded-md bg-[rgba(250,246,239,0.08)] px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-on-dark)] transition-colors duration-150 hover:bg-[rgba(250,246,239,0.12)] sm:px-3 sm:py-2 sm:text-[13px]"
           >
             Play
           </Link>
           <Link
             href="/submit"
-            className="rounded-md px-3 py-2 text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--text-on-dark-muted)] transition-colors duration-150 hover:bg-[rgba(250,246,239,0.04)] hover:text-[var(--text-on-dark)]"
+            className="rounded-md px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-on-dark-muted)] transition-colors duration-150 hover:bg-[rgba(250,246,239,0.04)] hover:text-[var(--text-on-dark)] sm:px-3 sm:py-2 sm:text-[13px]"
           >
             Submit
           </Link>
         </nav>
 
-        <div className="justify-self-end flex w-[160px] items-end justify-end gap-5">
+        <div className="justify-self-end flex w-[96px] items-end justify-end gap-2.5 sm:w-[160px] sm:gap-5">
           <div className="flex flex-col items-end gap-0.5">
-            <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--text-on-dark-muted)]">
+            <span className="text-[9px] font-medium uppercase tracking-[0.06em] text-[var(--text-on-dark-muted)] sm:text-[11px]">
               Score
             </span>
-            <span className="text-xl font-bold leading-none text-[var(--accent-gold)]">
+            <span className="text-base font-bold leading-none text-[var(--accent-gold)] sm:text-xl">
               {score}
             </span>
           </div>
           <div className="flex flex-col items-end gap-0.5">
-            <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--text-on-dark-muted)]">
+            <span className="text-[9px] font-medium uppercase tracking-[0.06em] text-[var(--text-on-dark-muted)] sm:text-[11px]">
               Total
             </span>
-            <span className="text-xl font-bold leading-none text-[var(--text-on-dark)]">
+            <span className="text-base font-bold leading-none text-[var(--text-on-dark)] sm:text-xl">
               {total}
             </span>
           </div>
         </div>
       </header>
 
-      <main className="flex h-[calc(100dvh-56px)] items-center justify-center overflow-hidden px-4 py-3 lg:px-8 lg:py-4">
+      <main className="flex h-[calc(100svh-56px)] items-center justify-center overflow-hidden px-2 py-2 sm:px-4 sm:py-3 md:h-[calc(100dvh-56px)] lg:px-8 lg:py-4">
         {isLoading ? (
-          <section className="motion-card-enter surface-card w-full max-w-[640px] px-10 py-10">
+          <section className="motion-card-enter surface-card w-full max-w-[680px] px-5 py-6 sm:px-10 sm:py-10">
             <p className="meta-label">Loading</p>
-            <h1 className="mt-4 font-serif text-[32px] leading-[1.18] tracking-[-0.02em] text-[var(--text-primary)]">
+            <h1 className="mt-4 font-serif text-[26px] leading-[1.18] tracking-[-0.02em] text-[var(--text-primary)] sm:text-[32px]">
               Pulling a strange story from the stack.
             </h1>
-            <p className="mt-4 text-base leading-[1.65] text-[var(--text-secondary)]">
+            <p className="mt-4 text-sm leading-[1.65] text-[var(--text-secondary)] sm:text-base">
               Pulling the next story for your round.
             </p>
           </section>
         ) : !story ? (
-          <section className="motion-card-enter surface-card w-full max-w-[640px] px-10 py-10">
+          <section className="motion-card-enter surface-card w-full max-w-[680px] px-5 py-6 sm:px-10 sm:py-10">
             <p className="meta-label">Problem</p>
-            <h1 className="mt-4 font-serif text-[32px] leading-[1.18] tracking-[-0.02em] text-[var(--text-primary)]">
+            <h1 className="mt-4 font-serif text-[26px] leading-[1.18] tracking-[-0.02em] text-[var(--text-primary)] sm:text-[32px]">
               The story feed is unavailable.
             </h1>
-            <p className="mt-4 text-base leading-[1.65] text-[var(--text-secondary)]">
+            <p className="mt-4 text-sm leading-[1.65] text-[var(--text-secondary)] sm:text-base">
               {error ?? "No story was returned."}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">

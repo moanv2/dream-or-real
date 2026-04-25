@@ -69,20 +69,22 @@ export default function SubmitPage() {
   return (
     <main className="app-page">
       <div className="app-frame">
-        <section className="mx-auto grid max-w-[1180px] gap-10 lg:grid-cols-[0.72fr_1.28fr]">
-          <div className="pt-4">
+        <section className="mx-auto grid max-w-[1180px] gap-6 sm:gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:gap-10">
+          <div className="pt-1 sm:pt-3 lg:pt-4">
             <p className="section-kicker">Submit</p>
-            <h1 className="section-title mt-5">
+            <h1 className="mt-4 font-serif text-[2rem] leading-[1.02] tracking-[-0.03em] text-[var(--text-on-dark)] sm:text-[2.6rem] lg:text-[3rem]">
               Submit a story.
             </h1>
-            <p className="section-copy">Share it directly and we will run it through the game.</p>
+            <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--text-on-dark-muted)] sm:text-base">
+              Story text and a label are required. Attachments are optional.
+            </p>
 
-            <div className="mt-8 space-y-4">
+            <div className="mt-5 space-y-3 sm:mt-8 sm:space-y-4">
               <div className="panel-soft p-5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-on-dark-muted)]">
                   Required
                 </p>
-                <p className="mt-3 text-sm leading-7 text-[var(--text-on-dark-muted)]">
+                <p className="mt-2 text-sm leading-6 text-[var(--text-on-dark-muted)]">
                   Story text and answer label (`dream` or `real`).
                 </p>
               </div>
@@ -90,7 +92,7 @@ export default function SubmitPage() {
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-on-dark-muted)]">
                   Optional
                 </p>
-                <p className="mt-3 text-sm leading-7 text-[var(--text-on-dark-muted)]">
+                <p className="mt-2 text-sm leading-6 text-[var(--text-on-dark-muted)]">
                   Image attachments.
                 </p>
               </div>
@@ -98,14 +100,14 @@ export default function SubmitPage() {
           </div>
 
           {result ? (
-            <section className="motion-card-enter surface-card p-8 lg:p-10">
+            <section className="motion-card-enter surface-card p-5 sm:p-7 lg:p-10">
               <span className="rounded-md border border-[var(--border-card)] bg-[var(--bg-card-reveal)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-secondary)]">
                 Submission result
               </span>
-              <h2 className="mt-6 font-serif text-[2.2rem] leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)]">
+              <h2 className="mt-5 font-serif text-[1.7rem] leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)] sm:mt-6 sm:text-[2.2rem]">
                 {outcomeLabel(result)}
               </h2>
-              <p className="mt-4 text-base leading-8 text-[var(--text-secondary)]">{result.message}</p>
+              <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)] sm:mt-4 sm:text-base sm:leading-8">{result.message}</p>
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card-reveal)] p-5">
@@ -131,7 +133,7 @@ export default function SubmitPage() {
                 </div>
               ) : null}
 
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-6 flex flex-wrap gap-3 sm:mt-8">
                 <button type="button" onClick={handleNewSubmission} className="button-subtle">
                   Submit another
                 </button>
@@ -141,18 +143,18 @@ export default function SubmitPage() {
               </div>
             </section>
           ) : (
-            <section className="motion-card-enter surface-card p-8 lg:p-10">
+            <section className="motion-card-enter surface-card p-5 sm:p-7 lg:p-10">
               <div>
                 <div className="max-w-[34rem]">
                   <span className="rounded-md border border-[var(--border-card)] bg-[var(--bg-card-reveal)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-secondary)]">
                     Story form
                   </span>
-                  <h2 className="mt-6 font-serif text-[2.2rem] leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)]">
+                  <h2 className="mt-5 font-serif text-[1.7rem] leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)] sm:mt-6 sm:text-[2.2rem]">
                     Keep it weird, specific, and plausible for five seconds.
                   </h2>
                 </div>
 
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                <form className="mt-6 space-y-5 sm:mt-8 sm:space-y-6" onSubmit={handleSubmit}>
                   <div className="space-y-2">
                     <label htmlFor="story-text" className="meta-label">
                       Story text
@@ -162,7 +164,7 @@ export default function SubmitPage() {
                       value={form.storyText}
                       onChange={(event) => handleChange("storyText", event.target.value)}
                       placeholder="Write your story."
-                      className="field-input min-h-[220px]"
+                      className="field-input min-h-[150px] sm:min-h-[220px]"
                       required
                     />
                   </div>
