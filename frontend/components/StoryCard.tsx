@@ -11,7 +11,6 @@ export function StoryCard({ story, children }: StoryCardProps) {
   const [imageUnavailable, setImageUnavailable] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const title = story.title ?? "Untitled story";
-  const sourceLabel = story.source === "seed" ? "Seed story" : "Community story";
   const imageSrc = story.comic_image_url ?? "/comics/library-sleepwalk.svg";
 
   useEffect(() => {
@@ -74,7 +73,6 @@ export function StoryCard({ story, children }: StoryCardProps) {
         </div>
 
         <div className="flex min-h-0 flex-1 flex-col px-6 pb-6 pt-4 lg:px-8 lg:pb-7 lg:pt-5">
-          <p className="meta-label">{sourceLabel}</p>
           <h2 className="font-serif text-[24px] font-normal leading-[1.25] tracking-[-0.01em] text-[var(--text-primary)] lg:text-[26px]">
             {title}
           </h2>
