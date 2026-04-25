@@ -1,5 +1,7 @@
 # dream-or-real
 
+**Live demo:** https://moanv2.github.io/dream-or-real/
+
 `dream-or-real` is a hackathon game:
 - read a short bizarre story + comic image
 - guess `dream` or `real`
@@ -19,7 +21,65 @@ This version adds AI-powered processing for **user-submitted stories**:
 - AI: Google Gemini via `google-genai` Python SDK
 - Infra: Docker + Docker Compose
 
-## Environment Variables
+## Quick start (run locally)
+
+Prerequisites: Docker Desktop (with Docker Compose v2) and a Google Gemini API key.
+
+1. Clone the repo and enter it:
+
+   ```bash
+   git clone https://github.com/moanv2/dream-or-real.git
+   cd dream-or-real
+   ```
+
+2. Create your `.env`:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Then edit `.env` and set `GEMINI_API_KEY=<your key>`. The other defaults work
+   out of the box for local dev.
+
+3. Build and start both services:
+
+   ```bash
+   docker compose up --build
+   ```
+
+4. Open the app:
+
+   - Frontend: http://localhost:3000
+   - Backend health: http://localhost:8000/health
+   - API docs: http://localhost:8000/docs
+
+To stop: `Ctrl+C`, then `docker compose down` (add `-v` to also wipe the
+SQLite volume and start fresh).
+
+## Run the frontend against the live/deployed backend
+
+The GitHub Pages build at https://moanv2.github.io/dream-or-real/ is a static
+export of `frontend/` pointed at a hosted backend via the
+`NEXT_PUBLIC_API_BASE_URL` repo variable (see
+`.github/workflows/deploy-pages.yml`).
+
+To run the frontend locally without Docker:
+
+```bash
+cd frontend
+npm ci
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000 npm run dev
+```
+
+On Windows PowerShell:
+
+```powershell
+cd frontend
+npm ci
+$env:NEXT_PUBLIC_API_BASE_URL="http://localhost:8000"; npm run dev
+```
+
+## Environment variables
 
 Copy `.env.example` to `.env` and fill in values:
 
@@ -34,20 +94,11 @@ Required for AI processing:
 
 Core app vars:
 - `DATABASE_URL`
-- `FRONTEND_ORIGIN`
+- `FRONTEND_ORIGIN` (comma-separated; the deployed frontend origin
+  `https://moanv2.github.io` must be included for CORS in production)
 - `STORIES_DIR`
 - `MEDIA_DIR`
-- `NEXT_PUBLIC_API_BASE_URL`
-
-## Run with Docker Compose
-
-```bash
-docker compose up --build
-```
-
-Then open:
-- Frontend: `http://localhost:3000`
-- Backend health: `http://localhost:8000/health`
+- `NEXT_PUBLIC_API_BASE_URL` (baked into the Next.js build at build time)
 
 ## Submission Processing Pipeline
 
