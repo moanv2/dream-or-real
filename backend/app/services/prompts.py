@@ -28,11 +28,16 @@ Constraints:
 - Keep a natural narrative voice, not robotic.
 - Remove filler and redundancy.
 - Do not invent new facts.
-- Target length: 280 to 420 characters.
+- Write at most 5 sentences.
+- Keep each sentence compact and readable.
+- Cover the full arc: setup, escalation, and ending/punchline.
 - Produce a short, intriguing title (4-10 words) that does not reveal dream vs real.
-- Also produce a concise 1-2 sentence visual summary for comic generation.
-- Also produce a comic beat sheet with 2-4 panels:
-  - each panel needs a concrete visual action
+- Also produce a concise visual summary for comic generation that includes the ending/punchline.
+- Also produce a comic story beat list (not panel layout instructions):
+  - 4 to 8 beats
+  - beats must cover the full story from beginning to end
+  - final beat must clearly include the ending/punchline consequence
+  - each beat needs a concrete visual action
   - optional short dialogue text
   - optional onomatopoeia (SFX)
   - keep all text elements concise and readable
@@ -46,7 +51,9 @@ Original text:
 COMIC_PROMPT_TEMPLATE = """Create a single colorful comic-style illustration based on the story package below.
 
 Style requirements:
-- one-page comic page with 2-4 clear panels
+- one-page comic composition
+- choose whatever panel layout best fits the full story arc
+- include the full story progression including the ending/punchline
 - clean composition, readable shapes, expressive characters
 - safe for work
 - if text is used, keep it sparse and legible (short dialogue/SFX only)
@@ -57,7 +64,7 @@ Style requirements:
 Scene summary:
 {comic_summary}
 
-Panel beat sheet:
+Story beat list:
 {comic_plan}
 """
 

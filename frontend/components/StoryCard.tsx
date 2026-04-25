@@ -78,7 +78,7 @@ export function StoryCard({ story, children }: StoryCardProps) {
           <h2 className="font-serif text-[24px] font-normal leading-[1.25] tracking-[-0.01em] text-[var(--text-primary)] lg:text-[26px]">
             {title}
           </h2>
-          <p className="mt-2 overflow-hidden text-[15px] leading-6 text-[var(--text-secondary)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:5]">
+          <p className="mt-2 text-[14px] leading-6 text-[var(--text-secondary)]">
             {story.display_text}
           </p>
 

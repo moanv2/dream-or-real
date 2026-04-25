@@ -9,7 +9,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 from app.config import settings
-from app.seed import build_display_text
+from app.seed import normalize_story_text
 from app.services.prompts import build_comic_prompt, build_moderation_prompt, build_rewrite_prompt
 
 try:
@@ -39,11 +39,11 @@ class ComicBeat(BaseModel):
 class RewriteResult(BaseModel):
     title: str = Field(description="Short gameplay title that does not reveal dream vs real.")
     display_text: str = Field(description="Gameplay-ready rewritten story text.")
-    comic_summary: str = Field(description="1-2 sentence visual summary for comic generation.")
+    comic_summary: str = Field(description="Visual summary for comic generation that includes the ending.")
     comic_beats: list[ComicBeat] = Field(
         default_factory=list,
         description=(
-            "Ordered comic panel plan with 2-4 entries. "
+            "Ordered comic story beat list with 4-8 entries. "
             "Each entry includes: action (required), dialogue (optional), sfx (optional)."
         )
     )
@@ -92,6 +92,10 @@ def _extract_response_text(response) -> str:
     raise GeminiServiceError("Model did not return text output.")
 
 
+def _normalize_text(value: str) -> str:
+    return " ".join(normalize_story_text(value).split())
+
+
 def moderate_story_text(original_text: str) -> ModerationResult:
     prompt = build_moderation_prompt(original_text)
     try:
@@ -137,25 +141,27 @@ def rewrite_story_for_gameplay(original_text: str) -> RewriteResult:
             result = RewriteResult.model_validate(parsed)
         else:
             result = RewriteResult.model_validate_json(_extract_response_text(response))
-        cleaned_display = build_display_text(result.display_text, limit=420)
-        cleaned_summary = build_display_text(result.comic_summary, limit=280)
+        cleaned_display = _normalize_text(result.display_text)
+        cleaned_summary = _normalize_text(result.comic_summary)
+        if not cleaned_summary:
+            cleaned_summary = cleaned_display
         cleaned_title = " ".join(result.title.split()).strip()
         if not cleaned_title:
             cleaned_title = "Untitled story"
         if len(cleaned_title) > 80:
             cleaned_title = cleaned_title[:80].rstrip()
         cleaned_beats = []
-        for beat in result.comic_beats[:4]:
-            action = build_display_text(beat.action.strip(), limit=160)
+        for beat in result.comic_beats:
+            action = _normalize_text(beat.action)
             if not action:
                 continue
-            dialogue_raw = (beat.dialogue or "").strip()
-            sfx_raw = (beat.sfx or "").strip()
+            dialogue_raw = _normalize_text(beat.dialogue or "")
+            sfx_raw = _normalize_text(beat.sfx or "")
             cleaned_beats.append(
                 ComicBeat(
                     action=action,
-                    dialogue=build_display_text(dialogue_raw, limit=80) if dialogue_raw else None,
-                    sfx=build_display_text(sfx_raw, limit=40) if sfx_raw else None,
+                    dialogue=dialogue_raw if dialogue_raw else None,
+                    sfx=sfx_raw if sfx_raw else None,
                 )
             )
         if not cleaned_beats:
@@ -174,7 +180,7 @@ def rewrite_story_for_gameplay(original_text: str) -> RewriteResult:
 def _format_comic_plan(comic_beats: list[ComicBeat]) -> str:
     lines: list[str] = []
     for index, beat in enumerate(comic_beats, start=1):
-        lines.append(f"Panel {index}: {beat.action or 'Scene action'}")
+        lines.append(f"Beat {index}: {beat.action or 'Scene action'}")
         dialogue = (beat.dialogue or "").strip()
         sfx = (beat.sfx or "").strip()
         if dialogue:
