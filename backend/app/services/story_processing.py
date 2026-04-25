@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import mimetypes
 from dataclasses import dataclass
 from datetime import datetime
@@ -17,6 +18,8 @@ from app.seed import build_display_text, slugify
 from app.services.ai import GeminiServiceError, generate_comic_for_story, moderate_story_text, rewrite_story_for_gameplay
 
 SubmissionOutcome = Literal["approved", "rejected", "needs_review", "processing_failed"]
+
+logger = logging.getLogger("uvicorn.error")
 
 
 @dataclass
@@ -96,6 +99,7 @@ async def process_user_story_submission(
     label: str,
     attachments: list[UploadFile],
 ) -> SubmissionProcessingResult:
+    logger.info("Submission pipeline started label=%s attachment_count=%d", label, len(attachments))
     _validate_attachments(attachments)
     fallback_display_text = build_display_text(text)
     story = Story(
@@ -112,6 +116,7 @@ async def process_user_story_submission(
     db.add(story)
     db.commit()
     db.refresh(story)
+    logger.info("Submission persisted story_id=%d source=%s", story.id, story.source)
 
     if attachments:
         await _save_attachments(story, attachments, db)
@@ -121,6 +126,7 @@ async def process_user_story_submission(
     try:
         moderation = moderate_story_text(story.original_text)
     except GeminiServiceError:
+        logger.exception("Moderation step failed story_id=%d", story.id)
         story.status = "processing_failed"
         story.processing_state = "failed"
         story.moderation_category = "unclear"
@@ -136,8 +142,15 @@ async def process_user_story_submission(
     story.moderation_category = moderation.category
     story.moderation_reason = moderation.reason
     story.processing_state = "filtered"
+    logger.info(
+        "Moderation step complete story_id=%d decision=%s category=%s",
+        story.id,
+        moderation.decision,
+        moderation.category,
+    )
 
     if moderation.decision == "rejected":
+        logger.info("Submission rejected story_id=%d reason=%s", story.id, moderation.reason)
         story.status = "rejected"
         db.commit()
         db.refresh(story)
@@ -148,6 +161,7 @@ async def process_user_story_submission(
         )
 
     if moderation.decision == "needs_review":
+        logger.warning("Submission marked needs_review story_id=%d", story.id)
         story.status = "needs_review"
         db.commit()
         db.refresh(story)
@@ -164,7 +178,9 @@ async def process_user_story_submission(
         story.title = rewrite.title
         story.display_text = rewrite.display_text
         story.processing_state = "rewritten"
+        logger.info("Rewrite step complete story_id=%d title=%s", story.id, story.title)
     except GeminiServiceError:
+        logger.exception("Rewrite step failed story_id=%d; using fallback display text", story.id)
         story.display_text = fallback_display_text
         story.processing_state = "failed"
         db.commit()
@@ -176,11 +192,13 @@ async def process_user_story_submission(
         )
 
     try:
-        comic = generate_comic_for_story(rewrite.comic_summary)
+        comic = generate_comic_for_story(rewrite.comic_summary, rewrite.comic_beats)
         story.comic_prompt = comic.prompt
         story.comic_image_url = _save_generated_comic(story.id, comic.image_bytes, comic.mime_type)
         story.processing_state = "comic_generated"
+        logger.info("Comic step complete story_id=%d comic_url=%s", story.id, story.comic_image_url)
     except GeminiServiceError:
+        logger.exception("Comic step failed story_id=%d", story.id)
         story.processing_state = "failed"
         db.commit()
         db.refresh(story)
@@ -192,6 +210,7 @@ async def process_user_story_submission(
 
     db.commit()
     db.refresh(story)
+    logger.info("Submission pipeline finished story_id=%d outcome=approved", story.id)
     return SubmissionProcessingResult(
         outcome="approved",
         message="Submission approved and fully processed.",

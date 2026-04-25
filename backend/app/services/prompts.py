@@ -31,6 +31,11 @@ Constraints:
 - Target length: 280 to 420 characters.
 - Produce a short, intriguing title (4-10 words) that does not reveal dream vs real.
 - Also produce a concise 1-2 sentence visual summary for comic generation.
+- Also produce a comic beat sheet with 2-4 panels:
+  - each panel needs a concrete visual action
+  - optional short dialogue text
+  - optional onomatopoeia (SFX)
+  - keep all text elements concise and readable
 
 Original text:
 ---
@@ -38,19 +43,22 @@ Original text:
 ---
 """
 
-COMIC_PROMPT_TEMPLATE = """Create a single colorful comic-style illustration of the scene below.
+COMIC_PROMPT_TEMPLATE = """Create a single colorful comic-style illustration based on the story package below.
 
 Style requirements:
-- one-page comic panel or storyboard frame
+- one-page comic page with 2-4 clear panels
 - clean composition, readable shapes, expressive characters
 - safe for work
-- no dialogue bubbles or tiny unreadable text
+- if text is used, keep it sparse and legible (short dialogue/SFX only)
 - slightly uncanny/funny mood
 - avoid photorealism, prefer illustrated editorial-comic look
 - do not hint whether the story is dream or real
 
 Scene summary:
 {comic_summary}
+
+Panel beat sheet:
+{comic_plan}
 """
 
 
@@ -62,5 +70,8 @@ def build_rewrite_prompt(story_text: str) -> str:
     return REWRITE_PROMPT_TEMPLATE.format(story_text=story_text)
 
 
-def build_comic_prompt(comic_summary: str) -> str:
-    return COMIC_PROMPT_TEMPLATE.format(comic_summary=comic_summary.strip())
+def build_comic_prompt(comic_summary: str, comic_plan: str) -> str:
+    return COMIC_PROMPT_TEMPLATE.format(
+        comic_summary=comic_summary.strip(),
+        comic_plan=comic_plan.strip(),
+    )

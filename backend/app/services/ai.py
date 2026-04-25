@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import logging
 from dataclasses import dataclass
 from functools import lru_cache
 from typing import Literal
@@ -29,10 +30,23 @@ class ModerationResult(BaseModel):
     confidence: float | None = None
 
 
+class ComicBeat(BaseModel):
+    action: str = Field(description="What visibly happens in this panel.")
+    dialogue: str | None = Field(default=None, description="Optional short dialogue line.")
+    sfx: str | None = Field(default=None, description="Optional short onomatopoeia.")
+
+
 class RewriteResult(BaseModel):
     title: str = Field(description="Short gameplay title that does not reveal dream vs real.")
     display_text: str = Field(description="Gameplay-ready rewritten story text.")
     comic_summary: str = Field(description="1-2 sentence visual summary for comic generation.")
+    comic_beats: list[ComicBeat] = Field(
+        default_factory=list,
+        description=(
+            "Ordered comic panel plan with 2-4 entries. "
+            "Each entry includes: action (required), dialogue (optional), sfx (optional)."
+        )
+    )
 
 
 @dataclass
@@ -44,6 +58,9 @@ class ComicGenerationResult:
 
 class GeminiServiceError(RuntimeError):
     pass
+
+
+logger = logging.getLogger("uvicorn.error")
 
 
 def _ensure_sdk_available() -> None:
@@ -92,8 +109,14 @@ def moderate_story_text(original_text: str) -> ModerationResult:
             result = ModerationResult.model_validate(parsed)
         else:
             result = ModerationResult.model_validate_json(_extract_response_text(response))
+        logger.info(
+            "Moderation completed decision=%s category=%s",
+            result.decision,
+            result.category,
+        )
         return result
     except Exception as exc:  # pragma: no cover - network/API behavior
+        logger.exception("Moderation request failed model=%s", settings.gemini_text_model)
         raise GeminiServiceError(f"Moderation failed: {exc}") from exc
 
 
@@ -121,17 +144,48 @@ def rewrite_story_for_gameplay(original_text: str) -> RewriteResult:
             cleaned_title = "Untitled story"
         if len(cleaned_title) > 80:
             cleaned_title = cleaned_title[:80].rstrip()
+        cleaned_beats = []
+        for beat in result.comic_beats[:4]:
+            action = build_display_text(beat.action.strip(), limit=160)
+            if not action:
+                continue
+            dialogue_raw = (beat.dialogue or "").strip()
+            sfx_raw = (beat.sfx or "").strip()
+            cleaned_beats.append(
+                ComicBeat(
+                    action=action,
+                    dialogue=build_display_text(dialogue_raw, limit=80) if dialogue_raw else None,
+                    sfx=build_display_text(sfx_raw, limit=40) if sfx_raw else None,
+                )
+            )
+        if not cleaned_beats:
+            cleaned_beats = [ComicBeat(action=cleaned_summary, dialogue=None, sfx=None)]
         return RewriteResult(
             title=cleaned_title,
             display_text=cleaned_display,
             comic_summary=cleaned_summary,
+            comic_beats=cleaned_beats,
         )
     except Exception as exc:  # pragma: no cover - network/API behavior
+        logger.exception("Rewrite request failed model=%s", settings.gemini_text_model)
         raise GeminiServiceError(f"Rewrite failed: {exc}") from exc
 
 
-def generate_comic_for_story(comic_summary: str) -> ComicGenerationResult:
-    prompt = build_comic_prompt(comic_summary)
+def _format_comic_plan(comic_beats: list[ComicBeat]) -> str:
+    lines: list[str] = []
+    for index, beat in enumerate(comic_beats, start=1):
+        lines.append(f"Panel {index}: {beat.action or 'Scene action'}")
+        dialogue = (beat.dialogue or "").strip()
+        sfx = (beat.sfx or "").strip()
+        if dialogue:
+            lines.append(f"Dialogue: {dialogue}")
+        if sfx:
+            lines.append(f"SFX: {sfx}")
+    return "\n".join(lines)
+
+
+def generate_comic_for_story(comic_summary: str, comic_beats: list[ComicBeat]) -> ComicGenerationResult:
+    prompt = build_comic_prompt(comic_summary, _format_comic_plan(comic_beats))
     try:
         response = _get_client().models.generate_content(
             model=settings.gemini_image_model,
@@ -159,4 +213,5 @@ def generate_comic_for_story(comic_summary: str) -> ComicGenerationResult:
                 )
         raise GeminiServiceError("Image generation returned no inline image data.")
     except Exception as exc:  # pragma: no cover - network/API behavior
+        logger.exception("Comic generation failed model=%s", settings.gemini_image_model)
         raise GeminiServiceError(f"Comic generation failed: {exc}") from exc
