@@ -29,7 +29,7 @@ def get_story_or_404(db: Session, story_id: int) -> Story:
 def list_stories(db: Session = Depends(get_db)) -> list[Story]:
     statement = (
         select(Story)
-        .where(Story.status == "approved", Story.source == "user")
+        .where(Story.status == "approved")
         .options(selectinload(Story.attachments))
         .order_by(Story.created_at.desc(), Story.id.desc())
     )
@@ -40,7 +40,7 @@ def list_stories(db: Session = Depends(get_db)) -> list[Story]:
 def random_story(db: Session = Depends(get_db)) -> Story:
     statement = (
         select(Story)
-        .where(Story.status == "approved", Story.source == "user")
+        .where(Story.status == "approved")
         .order_by(func.random())
         .limit(1)
     )
