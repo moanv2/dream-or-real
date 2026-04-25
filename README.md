@@ -63,6 +63,10 @@ export of `frontend/` pointed at a hosted backend via the
 `NEXT_PUBLIC_API_BASE_URL` repo variable (see
 `.github/workflows/deploy-pages.yml`).
 
+The frontend is configured in two modes:
+- local/Docker: standard Next.js server build (`next start`)
+- GitHub Pages: static export (`NEXT_EXPORT=true`)
+
 To run the frontend locally without Docker:
 
 ```bash
