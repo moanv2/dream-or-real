@@ -81,6 +81,18 @@ On backend startup, seed data loads from:
 
 Seeded stories are not retroactively AI-processed.
 
+To import local `stories/` files through the full AI pipeline (moderation ->
+rewrite/title -> comic generation) as playable stories, run:
+
+```bash
+docker compose run --rm backend python scripts/process_seed_stories.py
+```
+
+Useful flags:
+- `--limit N` process only first N files
+- `--force` reprocess even if identical text was already imported
+- `--stories-dir /stories` override source folder path
+
 ## Refreshing cold-start data (Reddit scraper)
 
 Cold-start stories are scraped directly from Reddit's public JSON endpoints
